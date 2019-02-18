@@ -1,0 +1,15 @@
+{
+  "modelName" : "m019",
+  "variableList" : [
+    {
+      "variableName" : "age",
+      "coefficient" : -4,
+      "defaultValue" : 27
+    },
+    {
+      "variableName" : "email_length",
+      "coefficient" : 7.532,
+      "defaultValue" : 19
+    }
+  ]
+}

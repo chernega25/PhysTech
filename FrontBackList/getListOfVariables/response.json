@@ -1,0 +1,10 @@
+[
+  {
+    "variableName" : "age",
+    "variableDescription" : "Возраст человека"
+  },
+  {
+    "variableName" : "email_length",
+    "variableDescription" : "Длина эл.почты"
+  }
+]

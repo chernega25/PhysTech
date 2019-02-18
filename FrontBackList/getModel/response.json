@@ -1,0 +1,20 @@
+{
+  "modelId" : 431,
+  "modelName" : "m019",
+  "version" : "2",
+  "testingStage" : "3",
+  "variableList" : [
+    {
+      "variableId" : 236,
+      "variableName" : "age",
+      "coefficient" : -17.43,
+      "defaultValue" : 30
+    },
+    {
+      "variableId" : 237,
+      "variableName" : "email_length",
+      "coefficient" : 4.647,
+      "defaultValue" : 15
+    }
+  ]
+}
