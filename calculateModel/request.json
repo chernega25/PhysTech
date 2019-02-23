@@ -1,0 +1,16 @@
+{
+  "models": [
+    "m019",
+    "m019cl"
+  ],
+  "variableList": [
+    {
+      "name": "age",
+      "value": 18
+    },
+    {
+      "name": "emailLength",
+      "value": 24
+    }
+  ]
+}
