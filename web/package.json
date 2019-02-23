@@ -8,7 +8,9 @@
   "dependencies": {
     "@platform-ui/button": "^2.6.5",
     "@platform-ui/group": "^2.1.4",
+    "@platform-ui/iconsPack": "^2.0.3",
     "@platform-ui/table": "^1.0.2",
+    "@platform-ui/text": "^4.0.2",
     "@tinkoff-ui/input": "^2.3.6",
     "autoprefixer": "^8.6.5",
     "colors": "^1.1.2",

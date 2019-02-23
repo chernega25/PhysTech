@@ -6,7 +6,7 @@ const MainPage = () => (
     <div className={styles.root}>
         <div className={styles.wrapper}>
             <ModelTable
-                disabled={false}
+                disabled={true}
                 model={{
                     modelName: 'm019',
                     version: 2
