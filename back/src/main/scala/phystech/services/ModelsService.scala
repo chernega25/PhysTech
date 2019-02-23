@@ -35,26 +35,16 @@ class ModelsService(implicit mongo: MongoBase, scheduler: Scheduler) extends End
   final def newModel: Endpoint[Task, NewModelResponse] =
     post("newModel" :: jsonBody[NewModelRequest]) { body: NewModelRequest =>
       println(s"newModel: $body")
-      val fetchVersion: Task[Long] =
-        body
-          .parentModelId
-          .map(parentId => mongo.getModelFamily(parentId).map(_.map(_.version).max + 1))
-          .getOrElse(Task.pure(0L))
-
-      for {
-        version <- fetchVersion
-        id = UUID.randomUUID().toString
-        model = Model(
-          modelId = id,
-          parentModelId = body.parentModelId.getOrElse(id),
-          modelName = body.modelName,
-          version = version,
-          testingStage = 0,
-          variableList = body.variableList
-        )
-        _ <- mongo.createModel(model)
-
-      } yield Ok(NewModelResponse(id))
+      val id = UUID.randomUUID().toString
+      val model = Model(
+        modelId = id,
+        parentModelId = id,
+        modelName = body.modelName,
+        version = 0L,
+        testingStage = 0,
+        variableList = body.variableList
+      )
+      mongo.createModel(model).map(_ => Ok(NewModelResponse(id)))
     }
 
   final def newVariable: Endpoint[Task, VariableNameWrapper] =
@@ -66,13 +56,26 @@ class ModelsService(implicit mongo: MongoBase, scheduler: Scheduler) extends End
   final def changeModel: Endpoint[Task, ChangeModelResponse] =
     post("changeModel" :: jsonBody[ChangeModelRequest]) { body: ChangeModelRequest =>
       println(s"changeModel: $body")
-      Ok(ChangeModelResponse("497", "319", 4))
+      for {
+        oldModel <- mongo.getModel(body.modelId)
+        id = UUID.randomUUID().toString
+        version <- mongo.getModelFamily(oldModel.parentModelId).map(_.map(_.version).max + 1)
+        model = Model(
+          modelId = id,
+          parentModelId = oldModel.parentModelId,
+          modelName = body.modelName,
+          version = version,
+          testingStage = 0,
+          variableList = body.variableList
+        )
+        _ <- mongo.createModel(model)
+      } yield Ok(ChangeModelResponse(id, oldModel.parentModelId, version))
     }
 
   final def changeVariable: Endpoint[Task, VariableNameWrapper] =
     post("changeVariable" :: jsonBody[Variable]) { body: Variable =>
       println(s"changeVariable $body")
-      Ok(VariableNameWrapper(body.variableName))
+      mongo.updateVariable(body).map(_ => Ok(VariableNameWrapper(body.variableName)))
     }
 
   final def combine[ES <: HList, CTS <: HList](bootstrap: Bootstrap[ES, CTS]) = Bootstrap

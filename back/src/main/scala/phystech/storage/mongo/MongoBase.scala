@@ -3,7 +3,7 @@ package phystech.storage.mongo
 import monix.eval.Task
 import org.bson.codecs.configuration.CodecRegistries._
 import org.mongodb.scala.bson.codecs.DEFAULT_CODEC_REGISTRY
-import org.mongodb.scala.{MongoClient, MongoCollection, MongoDatabase}
+import org.mongodb.scala.{MongoClient, MongoCollection}
 import org.mongodb.scala.bson.codecs.Macros._
 import org.mongodb.scala.model.Filters.equal
 import phystech.data.{Model, ModelVariable, Variable}
@@ -50,6 +50,10 @@ class MongoBase(url: String, name: String) {
       variables <- variableCollection.find(equal("variableName", variable.variableName)).asTask
       _         <- variableCollection.insertOne(variable).asTask
     } yield if (variables.nonEmpty) throw new Exception("Variable already exists")
+  }
+
+  def updateVariable(variable: Variable): Task[Unit] = {
+    variableCollection.replaceOne(equal("variableName", variable.variableName), variable).asTask.flatMap(_ => Task.unit)
   }
 
   def getAllVariables: Task[Seq[Variable]] = {
