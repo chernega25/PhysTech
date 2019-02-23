@@ -7,7 +7,7 @@ import Main from './client/pages/MainPage/MainPage.jsx';
 const matchConfig = [
 
     {
-        path: '/models/:name',
+        path: '/models/:name/:version',
         component: ModelsPage,
         exact: false
     },
@@ -22,7 +22,7 @@ const matchConfig = [
         exact: false
     },
     {
-        path: '/analitics',
+        path: '/analytics',
         component: AnalyticsPage,
         exact: false
     },

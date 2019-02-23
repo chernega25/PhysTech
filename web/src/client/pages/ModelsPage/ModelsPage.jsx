@@ -3,32 +3,85 @@ import styles from './ModelsPage.css';
 import ModelTable from '../../components/ModelTable/ModelTable.jsx';
 import Button from '@platform-ui/button';
 import Sidebar from '../../containers/Sidebar/Sidebar.jsx';
+import {getListOfModels} from "../../actions/getListOfModels";
+import {connect} from "react-redux";
+import {getModel} from "../../actions/getModel";
 
-const ModelsPage = ({ match }) => (
-    <div className={styles.root}>
-        <Sidebar
-            location
-            components={[
-                {
-                    component: props => <Button {...props}>1</Button>,
-                    path: '/models/1'
-                },
-                {
-                    component: props => <Button {...props}>2</Button>,
-                    path: '/models/2'
-                },
-                {
-                    component: props => <Button {...props}>3</Button>,
-                    path: '/models/3'
+class ModelsPage extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            exists: true
+        }
+
+    }
+
+    componentWillMount() {
+
+        console.log("hey");
+        const {
+            getListOfModels,
+            getModel,
+            match,
+            listOfModels,
+            listOfCurrentModels
+        } = this.props;
+
+
+        getListOfModels();
+        if (match.params.name) {
+            if (match.params.version) {
+                const model = listOfModels.find(x => x.modelName === match.params.name
+                                                && x.version === match.params.version);
+                if (model) {
+                    getModel(model.modelId);
+                } else {
+                    this.setState({ exists: false })
                 }
-            ]}
-        />
-        <div className={styles.wrapper}>
-            <ModelTable
-                modelName={match.params.name}
-            />
-        </div>
-    </div>
-);
+            } else {
+                const model = listOfCurrentModels.find(x => x.modelName === match.params.name);
+                if (model) {
+                    getModel(model.currentModelId);
+                } else {
+                    this.setState({ exists: false })
+                }
+            }
+        }
+    }
 
-export default ModelsPage;
+    render() {
+        const {
+            match,
+            listOfCurrentModels
+        } = this.props;
+
+        return (
+            <div className={styles.root}>
+                <Sidebar
+                    location
+                    components={listOfCurrentModels.map(x => ({
+                        component: props => <Button {...props}>{x.modelName}</Button>,
+                        path: `/models/${x.modelName}`
+                    }))}
+                />
+                <div className={styles.wrapper}>
+                    {this.state.exists ? <ModelTable
+                        modelName={match.params.name}
+                    /> : "Пошёл нахуй"}
+                </div>
+            </div>
+        )
+    }
+}
+
+const mapStateToProps = ({ listOfModels, listOfCurrentModels }) => {
+    return { listOfModels, listOfCurrentModels };
+};
+
+const mapDispatchToProps = {
+    getListOfModels,
+    getModel
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(ModelsPage);
