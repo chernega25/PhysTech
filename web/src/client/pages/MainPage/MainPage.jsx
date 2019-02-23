@@ -4,7 +4,15 @@ import ModelTable from '../../components/ModelTable/ModelTable.jsx';
 
 const MainPage = () => (
     <div className={styles.root}>
-        <ModelTable disabled={false} />
+        <div className={styles.wrapper}>
+            <ModelTable
+                disabled={false}
+                model={{
+                    modelName: 'm019',
+                    version: 2
+                }}
+            />
+        </div>
     </div>
 );
 

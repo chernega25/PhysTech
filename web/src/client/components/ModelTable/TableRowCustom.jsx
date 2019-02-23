@@ -8,27 +8,27 @@ class TableRowCustom extends Component {
     }
 
     render() {
-        const { id, row: {variable, weight, description} } = this.props;
+        const { id, row: {variableName, coefficient, defaultValue} } = this.props;
         return (
             <TableRow>
                 <TableCellCustom
                     id={id}
-                    name={'variable'}
-                    value={variable}
+                    name={'variableName'}
+                    value={variableName}
                     disabled={this.props.disabled}
                     onChange={this.props.onChange}
                 />
                 <TableCellCustom
                     id={id}
-                    name={'weight'}
-                    value={weight}
+                    name={'coefficient'}
+                    value={coefficient}
                     disabled={this.props.disabled}
                     onChange={this.props.onChange}
                 />
                 <TableCellCustom
                     id={id}
-                    name={'description'}
-                    value={description}
+                    name={'defaultValue'}
+                    value={defaultValue}
                     disabled={this.props.disabled}
                     onChange={this.props.onChange}
                 />

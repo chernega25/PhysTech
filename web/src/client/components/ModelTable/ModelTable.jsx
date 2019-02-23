@@ -1,38 +1,55 @@
 import React, { Component } from 'react';
 import Table, { TableHeader, TableHeaderCell  } from '@platform-ui/table';
-import styles from './ModelTable.css';
 import TableRowCustom from './TableRowCustom.jsx'
+import Group from '@platform-ui/group';
+import Button from '@platform-ui/button';
 
-let items = [{variable: 'name', weight: '0.3', description: 'client\'s name'},
-    {variable: 'age', weight: '0.7', description: 'client\'s age'}];
+let mock = [{variableName: 'name', coefficient: '0.3', defaultValue: '0.1'},
+            {variableName: 'age', coefficient: '0.7', defaultValue: '0.2'}];
 
 class ModelTable extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            list: items
+            model: {
+                ...props.model,
+                variableList: this.getDataFromModel(props)
+            },
+            disabled: props.disabled
         }
         this.handleInputChange = this.handleInputChange.bind(this)
     }
 
+    getDataFromModel({model}) {
+        return mock
+    }
+
     handleInputChange(value, name) {
         const [column, row] = name.split('_');
-        this.setState(({list}) => ({
-            list: [
-                ...list.slice(0,+row),
-                {
-                    ...list[+row],
-                    [column]: value,
-                },
-                ...list.slice((+row)+1)
-            ]
+        this.setState(({ model }) => ({
+            model: {
+                ...model,
+                variableList: [
+                    ...model.variableList.slice(0, +row),
+                    {
+                        ...model.variableList[+row],
+                        [column]: value,
+                    },
+                    ...model.variableList.slice((+row) + 1)
+                ]
+            }
         }));
     }
 
+    handleStatus(status) {
+        return () => this.setState({ disabled: status })
+    }
+
     render() {
-        const { list } = this.state;
+        const { model } = this.state;
         return (
-            <div className={styles.wrapper}>
+            <div>
+                Модель {model.modelName}, версия {model.version}
                 <Table>
                     <TableHeader>
                         <TableHeaderCell>
@@ -45,15 +62,23 @@ class ModelTable extends Component {
                             Описание
                         </TableHeaderCell>
                     </TableHeader>
-                    {list.map((row, id) =>
+                    {model.variableList.map((row, id) =>
                         (<TableRowCustom
                             row={row}
                             id={id}
-                            disabled={this.props.disabled}
+                            disabled={this.state.disabled}
                             onChange={this.handleInputChange}
                         />))
                     }
                 </Table>
+                <Group wide theme="outline" size="s">
+                    <Button onClick={this.handleStatus(true)}>
+                        Просмотр
+                    </Button>
+                    <Button onClick={this.handleStatus(false)}>
+                        Редактирование
+                    </Button>
+                </Group>
             </div>
         );
     }
