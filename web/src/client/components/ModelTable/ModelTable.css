@@ -1,0 +1,13 @@
+.left {
+     width: 80%;
+     display: inline-block
+ }
+
+.right {
+    width: 20%;
+    display: inline-block
+}
+
+.header {
+    margin-bottom: 20px;
+}
