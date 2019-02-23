@@ -1,7 +1,9 @@
+./node_modules/
 node_modules/
 public/static/
+./public/static/
 dist/
 .tmp
 .DS_Store
-*.xml
+.xml
 .idea/
