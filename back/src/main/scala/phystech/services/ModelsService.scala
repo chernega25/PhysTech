@@ -99,7 +99,7 @@ class ModelsService(implicit mongo: MongoBase, scheduler: Scheduler) extends End
       mongo.getCurrentModels.map(Ok)
     }
 
-  final def combine[ES <: HList, CTS <: HList](bootstrap: Bootstrap[ES, CTS]) = Bootstrap
+  final def combine[ES <: HList, CTS <: HList](bootstrap: Bootstrap[ES, CTS]) = bootstrap
     .serve[Application.Json](
       (getListOfModels :+: getListOfVariables :+: getModel :+:
           newModel :+: newVariable :+: changeModel :+:
