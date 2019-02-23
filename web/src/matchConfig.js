@@ -12,6 +12,11 @@ const matchConfig = [
         exact: false
     },
     {
+        path: '/models/:name',
+        component: ModelsPage,
+        exact: false
+    },
+    {
         path: '/variables',
         component: VariablesPage,
         exact: false
