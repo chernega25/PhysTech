@@ -6,10 +6,10 @@ import io.finch.{BadRequest, Ok}
 import io.finch._
 import monix.eval.Task
 import monix.execution.Scheduler
-import phystech.responses.{ChangeModelResponse, ModelSummary, NewModelResponse, VariableNameWrapper}
+import phystech.responses._
 import io.circe.generic.auto._
 import io.finch.circe._
-import phystech.data.{Model, Variable}
+import phystech.data.{CurrentModel, Model, Variable}
 import phystech.requests.{ChangeModelRequest, NewModelRequest}
 import phystech.storage.mongo.MongoBase
 import shapeless.HList
@@ -19,6 +19,12 @@ class ModelsService(implicit mongo: MongoBase, scheduler: Scheduler) extends End
   final def getListOfModels: Endpoint[Task, Seq[ModelSummary]] =
     get("getListOfModels") { () =>
       mongo.getAllModels.map(_.map(ModelSummary.fromModel)).map(Ok)
+    }
+
+  final def getFamilyOfModels: Endpoint[Task, Seq[Model]] =
+    get("getFamilyOfModels" :: param[String]("parentModelId")) { parentId: String =>
+      println(s"getFamilyOfModels $parentId")
+      mongo.getModelFamily(parentId).map(Ok)
     }
 
   final def getListOfVariables: Endpoint[Task, Seq[Variable]] =
@@ -35,6 +41,7 @@ class ModelsService(implicit mongo: MongoBase, scheduler: Scheduler) extends End
   final def newModel: Endpoint[Task, NewModelResponse] =
     post("newModel" :: jsonBody[NewModelRequest]) { body: NewModelRequest =>
       println(s"newModel: $body")
+      // TODO: Name check
       val id = UUID.randomUUID().toString
       val model = Model(
         modelId = id,
@@ -44,7 +51,10 @@ class ModelsService(implicit mongo: MongoBase, scheduler: Scheduler) extends End
         testingStage = 0,
         variableList = body.variableList
       )
-      mongo.createModel(model).map(_ => Ok(NewModelResponse(id)))
+      for {
+        _ <- mongo.createModel(model)
+        _ <- mongo.createCurrentModel(CurrentModel(id, id, model.modelName))
+      } yield Ok(NewModelResponse(id))
     }
 
   final def newVariable: Endpoint[Task, VariableNameWrapper] =
@@ -78,11 +88,16 @@ class ModelsService(implicit mongo: MongoBase, scheduler: Scheduler) extends End
       mongo.updateVariable(body).map(_ => Ok(VariableNameWrapper(body.variableName)))
     }
 
+  final def getListOfCurrentModels: Endpoint[Task, Seq[CurrentModel]] =
+    get("getListOfCurrentModels") { () =>
+      mongo.getCurrentModels.map(Ok)
+    }
+
   final def combine[ES <: HList, CTS <: HList](bootstrap: Bootstrap[ES, CTS]) = Bootstrap
     .serve[Application.Json](
       (getListOfModels :+: getListOfVariables :+: getModel :+:
           newModel :+: newVariable :+: changeModel :+:
-          changeVariable) handle {
+          changeVariable :+: getFamilyOfModels :+: getListOfCurrentModels) handle {
         case e: Exception =>
           println(s"Error: $e")
           BadRequest(e)

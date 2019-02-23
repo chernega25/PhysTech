@@ -6,7 +6,7 @@ import org.mongodb.scala.bson.codecs.DEFAULT_CODEC_REGISTRY
 import org.mongodb.scala.{MongoClient, MongoCollection}
 import org.mongodb.scala.bson.codecs.Macros._
 import org.mongodb.scala.model.Filters.equal
-import phystech.data.{Model, ModelVariable, Variable}
+import phystech.data.{CurrentModel, Model, ModelVariable, Variable}
 import phystech.storage.mongo.mongoSyntax._
 
 class MongoBase(url: String, name: String) {
@@ -16,7 +16,8 @@ class MongoBase(url: String, name: String) {
       fromProviders(
         classOf[ModelVariable],
         classOf[Model],
-        classOf[Variable]
+        classOf[Variable],
+        classOf[CurrentModel],
       ),
       DEFAULT_CODEC_REGISTRY
     )
@@ -24,6 +25,7 @@ class MongoBase(url: String, name: String) {
 
   private val modelCollection: MongoCollection[Model] = db.getCollection("models")
   private val variableCollection: MongoCollection[Variable] = db.getCollection("variables")
+  private val currentModelCollection: MongoCollection[CurrentModel] = db.getCollection("currentModel")
 
   def createModel(model: Model): Task[Unit] = {
     modelCollection.insertOne(model).asTask.flatMap(_ => Task.unit)
@@ -48,8 +50,9 @@ class MongoBase(url: String, name: String) {
   def createVariable(variable: Variable): Task[Unit] = {
     for {
       variables <- variableCollection.find(equal("variableName", variable.variableName)).asTask
+      _         = if (variables.nonEmpty) throw new Exception("Variable already exists")
       _         <- variableCollection.insertOne(variable).asTask
-    } yield if (variables.nonEmpty) throw new Exception("Variable already exists")
+    } yield ()
   }
 
   def updateVariable(variable: Variable): Task[Unit] = {
@@ -58,5 +61,17 @@ class MongoBase(url: String, name: String) {
 
   def getAllVariables: Task[Seq[Variable]] = {
     variableCollection.find().asTask
+  }
+
+  def createCurrentModel(currentModel: CurrentModel): Task[Unit] = {
+    for {
+      models <- currentModelCollection.find(equal("parentModelId", currentModel.parentModelId)).asTask
+      _      = if (models.nonEmpty) throw new Exception("Current model already exists")
+      _      <- currentModelCollection.insertOne(currentModel).asTask
+    } yield ()
+  }
+
+  def getCurrentModels: Task[Seq[CurrentModel]] = {
+    currentModelCollection.find().asTask
   }
 }
