@@ -1,5 +1,3 @@
-require('babel-register');
-
 const consoleDebug = require('debug')('server');
 const app = (require('express'))();
 const env = require('./src/env');
