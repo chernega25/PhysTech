@@ -1,3 +1,3 @@
 package phystech.requests
 
-class GetModelRequest(modelId: String)
+final case class GetModelRequest(modelId: String, version: Int)
