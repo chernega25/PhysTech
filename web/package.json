@@ -7,6 +7,11 @@
   "license": "ISC",
   "dependencies": {
     "@platform-ui/button": "^2.6.5",
+    "@platform-ui/group": "^2.1.4",
+    "@platform-ui/iconsPack": "^2.0.3",
+    "@platform-ui/table": "^1.0.2",
+    "@platform-ui/text": "^4.0.2",
+    "@tinkoff-ui/input": "^2.3.6",
     "autoprefixer": "^8.6.5",
     "colors": "^1.1.2",
     "debug": "^3.2.6",
@@ -56,6 +61,7 @@
     "compile": "webpack",
     "build": "webpack -p --progress --colors --config webpack.prod.config.js",
     "start": "node server.js",
-    "dev": "NODE_ENV=development PORT=8080 HOST='0.0.0.0' DEBUG=server,server:rendering,server:loading,client:rendering,client:actions,server:sendingToClient babel-node server.js --presets env,react,es2017,stage-3 server.js"
+    "dev": "NODE_ENV=development PORT=8080 HOST='0.0.0.0' DEBUG=server,server:rendering,server:loading,client:rendering,client:actions,server:sendingToClient babel-node server.js --presets env,react,es2017,stage-3 server.js",
+    "dev:w": "set NODE_ENV=development&set PORT=8080&set HOST=0.0.0.0&set DEBUG=server,server:rendering,server:loading,client:rendering,client:actions,server:sendingToClient&babel-node server.js --presets env,react,es2017,stage-3 server.js"
   }
 }
