@@ -1,7 +1,9 @@
 import scalaj.http._
 import org.json4s._
 import org.json4s.jackson.JsonMethods._
+
 import scala.io.StdIn._
+import scala.util.Random
 
 object Test {
   val URL = "http:/95.179.163.167:8080"
@@ -11,6 +13,14 @@ object Test {
       case JObject(List(("text", JString(x)))) => x
       case _ => "None"
     }
+  }
+
+  def variableValues(variables: List[String]): List[(String, Int)] = {
+    variables.map((_, Random.nextInt() % 50))
+  }
+
+  def getResult(variablesValues: List[(String, Int)], models: List[String]): List[String] = {
+    models
   }
 
   def main(args: Array[String]): Unit = {
