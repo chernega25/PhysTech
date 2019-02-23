@@ -17,5 +17,6 @@ libraryDependencies ++= Seq(
   "org.mongodb.scala" %% "mongo-scala-driver" % "2.6.0",
   "com.crobox.clickhouse" %% "client" % "0.8.5",
   "org.typelevel" %% "cats-core" % "1.6.0",
-  "ch.qos.logback" % "logback-classic" % "1.1.3" % Runtime
+  "com.typesafe.scala-logging" %% "scala-logging" % "3.7.2",
+  "ch.qos.logback" % "logback-classic" % "1.2.3"
 )
