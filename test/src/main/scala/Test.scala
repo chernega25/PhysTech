@@ -1,8 +1,11 @@
-import scalaj.http.Http
+import scalaj.http._
 import org.json4s._
 import org.json4s.jackson.JsonMethods._
+import scala.io.StdIn._
 
 object Test {
+  val URL = "http:/95.179.163.167:8080"
+
   def p(s: String): String = {
     parse(s) match {
       case JObject(List(("text", JString(x)))) => x
@@ -11,6 +14,15 @@ object Test {
   }
 
   def main(args: Array[String]): Unit = {
-    println(p(Http("http://localhost:8080/Nikita").asString.body))
+    while (true) {
+      val s = readLine()
+
+      val result = Http(s"$URL/changeVariable")
+        .postData(s"""{"variableName": "email_length","variableDescription": "$s"}""")
+        .header("Content-Type", "application/json")
+        .option(HttpOptions.readTimeout(10000)).asString
+
+      println(Http(s"$URL/getListOfVariables").asString.body)
+    }
   }
 }
