@@ -22,13 +22,34 @@ import phystech.responses.{
 import io.circe.generic.auto._
 import io.finch.Decode.Dispatchable
 import io.finch.circe._
+import phystech.calculate.CalculateModel
 import phystech.data.{Model, ModelVariable, Variable}
 import phystech.requests.{ChangeModelRequest, NewModelRequest}
 import phystech.storage.mongo.MongoBase
 import shapeless.HList
 
-class TestingService(implicit scheduler: Scheduler)
+class TestingService(implicit scheduler: Scheduler, mongo: MongoBase)
     extends Endpoint.Module[Task] {
+
+  private def calcCsv(model: Model, csv: String): String = {
+    val eps: Double = 10e-3
+    val lines = csv.replaceAll(" ", "").split("\n")
+    val names = lines(0).split(",")
+    val valueLines = lines.drop(1)
+    val modelValues = valueLines
+      .map(_.split(","))
+      .map(v => names.zip(v.map(_.toDouble)).toMap)
+      .map(v => {
+        val res = v("result")
+        val modelRes = CalculateModel(model, v)
+        (modelRes, math.abs(res - modelRes) < eps)
+      })
+
+    (names :+ "modelResult" :+ "converged").mkString(",") + "\n" + valueLines
+      .zip(modelValues)
+      .map(p => s"${p._1},${p._2._1},${p._2._2}")
+      .mkString("\n")
+  }
 
   implicit val csvDecoder: Dispatchable[String, Application.Csv] =
     (ct: String, b: Buf, cs: Charset) => {
@@ -45,17 +66,22 @@ class TestingService(implicit scheduler: Scheduler)
     }
 
   final def testFirstStage: Endpoint[Task, String] =
-    post("testFirstStage" :: body[String, Application.Csv]) {
-      body: String =>
-        println(body)
-        Ok(body)
-          .withHeader("Content-Disposition",
-                      "form-data; name=test; filename=test.csv")
-          .withHeader("Content-Type", "text/csv")
+    post(
+      "testFirstStage" :: param[String]("modelId") :: body[String,
+                                                           Application.Csv]) {
+      (id: String, body: String) =>
+        mongo
+          .getModel(id)
+          .map(
+            m =>
+              Ok(calcCsv(m, body))
+                .withHeader("Content-Disposition",
+                            "form-data; name=test; filename=test.csv")
+                .withHeader("Content-Type", "text/csv"))
     }
 
   final def combine[ES <: HList, CTS <: HList](bootstrap: Bootstrap[ES, CTS]) =
-    Bootstrap
+    bootstrap
       .serve[Text.Plain](
         (testFirstStage) handle {
           case e: Exception =>
