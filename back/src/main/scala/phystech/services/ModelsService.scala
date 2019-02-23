@@ -9,7 +9,7 @@ import monix.execution.Scheduler
 import phystech.responses.{ChangeModelResponse, ModelSummary, NewModelResponse, VariableNameWrapper}
 import io.circe.generic.auto._
 import io.finch.circe._
-import phystech.data.{Model, ModelVariable, Variable}
+import phystech.data.{Model, Variable}
 import phystech.requests.{ChangeModelRequest, NewModelRequest}
 import phystech.storage.mongo.MongoBase
 import shapeless.HList
@@ -23,7 +23,7 @@ class ModelsService(implicit mongo: MongoBase, scheduler: Scheduler) extends End
 
   final def getListOfVariables: Endpoint[Task, Seq[Variable]] =
     get("getListOfVariables") { () =>
-      Ok(Seq(Variable("age", "Возраст человека"), Variable("email_length", "Длина эл. почты")))
+      mongo.getAllVariables.map(Ok)
     }
 
   final def getModel: Endpoint[Task, Model] =
@@ -35,8 +35,14 @@ class ModelsService(implicit mongo: MongoBase, scheduler: Scheduler) extends End
   final def newModel: Endpoint[Task, NewModelResponse] =
     post("newModel" :: jsonBody[NewModelRequest]) { body: NewModelRequest =>
       println(s"newModel: $body")
+      val fetchVersion: Task[Long] =
+        body
+          .parentModelId
+          .map(parentId => mongo.getModelFamily(parentId).map(_.map(_.version).max + 1))
+          .getOrElse(Task.pure(0L))
+
       for {
-        version <- body.parentModelId.map(mongo.countFamily).getOrElse(Task.pure(0L))
+        version <- fetchVersion
         id = UUID.randomUUID().toString
         model = Model(
           modelId = id,
@@ -54,7 +60,7 @@ class ModelsService(implicit mongo: MongoBase, scheduler: Scheduler) extends End
   final def newVariable: Endpoint[Task, VariableNameWrapper] =
     post("newVariable" :: jsonBody[Variable]) { body: Variable =>
       println(s"newVariable: $body")
-      Ok(VariableNameWrapper(body.variableName))
+      mongo.createVariable(body).map(_ => Ok(VariableNameWrapper(body.variableName)))
     }
 
   final def changeModel: Endpoint[Task, ChangeModelResponse] =
