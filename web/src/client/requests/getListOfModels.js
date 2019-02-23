@@ -1,7 +1,7 @@
 import debug from 'debug';
-import {API_URL} from './constants';
-import fetch from './fetch';
+import {API_URL} from "./constants";
 
+const fetch = require('isomorphic-fetch');
 const consoleDebug = debug('server:sendingToClient');
 
 /**
