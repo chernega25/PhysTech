@@ -1,11 +1,22 @@
-import { FETCH_DATA } from '../actions/actionTypes';
+import {
+    FETCH_LIST_OF_MODELS,
+    FETCH_LIST_OF_VARIABLES,
+    FETCH_MODEL,
+    FETCH_MODEL_ID
+} from '../actions/actionTypes';
 
-const initialState = [];
+const initialState = {};
 
-export default function epicsReducers(state = initialState, { type, payload }) {
+export default function data(state = initialState, { type, payload }) {
     switch (type) {
-        case FETCH_DATA:
-            return payload;
+        case FETCH_LIST_OF_MODELS:
+        case FETCH_MODEL:
+        case FETCH_MODEL_ID:
+        case FETCH_LIST_OF_VARIABLES:
+            return {
+                ...state,
+                ...payload
+            };
         default:
             return state;
     }
