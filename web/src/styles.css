@@ -1,0 +1,34 @@
+@font-face {
+  font-family: 'Circe-Light';
+  src: url('./client/fonts/Circe-Light.ttf') format('truetype');
+  font-style: normal;
+  font-weight: normal;
+}
+
+body {
+  font-family: 'Circe-Light';
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background-color: #ffffff;
+  background-image: url("./client/images/overlay.png"), linear-gradient(10deg,  #fffdeb 1%,
+  #ffdd2d), url("./client/images/bg.jpg");
+  background-repeat: repeat, no-repeat, no-repeat;
+  background-size: 100px 100px, cover, cover;
+  background-position: top left, center center, bottom center;
+  background-attachment: fixed, fixed, fixed;
+  color: #545255;
+  outline: none;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  text-transform: none;
+}

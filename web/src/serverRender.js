@@ -17,6 +17,7 @@ import {
     FETCH_ERROR,
     SET_LOADER
 } from './client/actions/actionTypes';
+import './styles.css';
 
 const consoleDebug = debug('server:rendering');
 

@@ -12,6 +12,7 @@ import {
 } from 'react-router-dom';
 import reducers from './client/reducers';
 import matchConfig from './matchConfig';
+import './styles.css';
 
 const consoleDebug = debug('client:rendering');
 
@@ -39,5 +40,5 @@ render(
             </Switch>
         </BrowserRouter>
     </Provider>,
-    document.getElementById('root')
+    root
 );
