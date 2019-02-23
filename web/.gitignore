@@ -1,7 +1,0 @@
-node_modules/
-public/static/
-dist/
-.tmp
-.DS_Store
-*.xml
-.idea/
