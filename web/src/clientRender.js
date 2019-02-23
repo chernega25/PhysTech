@@ -1,6 +1,5 @@
 /* eslint-disable no-underscore-dangle */
 import debug from 'debug';
-import 'babel-polyfill';
 import React from 'react';
 import { render } from 'react-dom';
 import { createStore, compose, applyMiddleware } from 'redux';

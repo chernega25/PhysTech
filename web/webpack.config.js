@@ -51,6 +51,7 @@ const config = {
             }
         ]
     },
+    mode: 'development',
     plugins: [
         new webpack.HotModuleReplacementPlugin(),
         new webpack.NoEmitOnErrorsPlugin(),

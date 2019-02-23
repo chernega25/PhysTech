@@ -1,0 +1,33 @@
+.sidebar {
+    font-family: 'Circe-Light';
+    position: fixed;
+    display: flex;
+    justify-content: flex-start;
+    background: #fff;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    top: 0;
+    left: 0;
+  }
+
+  .icon {
+    width: 50px;
+    height: 50px;
+    border: 1px #545255 solid;
+    box-shadow: 0 0 3px #545255;
+    border-radius: 80px;
+    background-image: url("../../images/graphic-design.png");
+    background-size: 50px 50px;
+  }
+
+  .active {
+    opacity: 0.5;
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    list-style: none;
+  }
