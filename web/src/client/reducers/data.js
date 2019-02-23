@@ -9,10 +9,10 @@ const initialState = {};
 
 export default function data(state = initialState, { type, payload }) {
     switch (type) {
-        case FETCH_LIST_OF_MODELS
-            | FETCH_MODEL
-            | FETCH_MODEL_ID
-            | FETCH_LIST_OF_VARIABLES:
+        case FETCH_LIST_OF_MODELS:
+        case FETCH_MODEL:
+        case FETCH_MODEL_ID:
+        case FETCH_LIST_OF_VARIABLES:
             return {
                 ...state,
                 ...payload
