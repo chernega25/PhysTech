@@ -6,6 +6,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@platform-ui/button": "^2.6.5",
     "autoprefixer": "^8.6.5",
     "colors": "^1.1.2",
     "debug": "^3.2.6",
