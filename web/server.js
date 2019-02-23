@@ -29,7 +29,7 @@ if (process.env.NODE_ENV === 'development') {
 app.use(require('express').static('public'));
 
 const serverRender = require('./src/serverRender');
-const fetchData = require('./src/fetchData');
+const fetchData = require('./src/client/requests/fetchData');
 
 app.get('/getData', fetchData);
 app.get('*', serverRender);
