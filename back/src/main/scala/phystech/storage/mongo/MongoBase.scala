@@ -35,6 +35,10 @@ class MongoBase(url: String, name: String) {
     } yield ()
   }
 
+  def addModelToFamily(model: Model): Task[Unit] = {
+    modelCollection.insertOne(model).asTask.map(_ => Task.unit)
+  }
+
   def getAllModels: Task[Seq[Model]] = {
     modelCollection.find().asTask
   }
@@ -56,6 +60,13 @@ class MongoBase(url: String, name: String) {
       variables <- variableCollection.find(equal("variableName", variable.variableName)).asTask
       _         = if (variables.nonEmpty) throw new Exception("Variable already exists")
       _         <- variableCollection.insertOne(variable).asTask
+    } yield ()
+  }
+
+  def createVariableIfMissing(variableName: String): Task[Unit] = {
+    for {
+      variable <- variableCollection.find(equal("variableName", variableName)).asTask
+      _ <- if (variable.isEmpty) variableCollection.insertOne(Variable(variableName, "")).asTask else Task.unit
     } yield ()
   }
 
