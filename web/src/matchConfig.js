@@ -7,12 +7,12 @@ import Main from './client/pages/MainPage/MainPage.jsx';
 const matchConfig = [
 
     {
-        path: '/models',
+        path: '/models/:name',
         component: ModelsPage,
         exact: false
     },
     {
-        path: '/models/:name',
+        path: '/models',
         component: ModelsPage,
         exact: false
     },
