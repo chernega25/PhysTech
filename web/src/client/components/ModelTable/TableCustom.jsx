@@ -60,6 +60,17 @@ class TableCustom extends Component {
         })
     }
 
+    handleDeleteRow(id) {
+        return () => {
+            this.setState(({ variableList }) => ({
+                variableList: [
+                    ...variableList.slice(0, id),
+                    ...variableList.slice(id + 1)
+                ]
+            }));
+        }
+    }
+
     render() {
         const { variableList, disabled } = this.state;
         return (
@@ -82,6 +93,7 @@ class TableCustom extends Component {
                             id={id}
                             disabled={disabled}
                             onChange={this.handleInputChange}
+                            onDeleteRow={this.handleDeleteRow(id)}
                         />))
                     }
                     <TableRow>
@@ -93,7 +105,7 @@ class TableCustom extends Component {
                                 onClick={this.handleAddRow}
                                 disabled={disabled}
                             >
-                                Плюс
+                                +
                             </Button>
                         </TableCell>
                     </TableRow>

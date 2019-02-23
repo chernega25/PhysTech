@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { TableRow  } from '@platform-ui/table';
+import { TableRow, TableCell } from '@platform-ui/table';
 import TableCellCustom from "./TableCellCustom.jsx";
+import Button from '@platform-ui/button';
 
 class TableRowCustom extends Component {
     constructor(props) {
@@ -32,6 +33,17 @@ class TableRowCustom extends Component {
                     disabled={this.props.disabled}
                     onChange={this.props.onChange}
                 />
+                <TableCell>
+                    <Button
+                        theme='secondary'
+                        round
+                        size='m'
+                        disabled={this.props.disabled}
+                        onClick={this.props.onDeleteRow}
+                    >
+                        -
+                    </Button>
+                </TableCell>
             </TableRow>
         );
     }
