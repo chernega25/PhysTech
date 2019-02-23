@@ -1,11 +1,10 @@
 import React from 'react';
 import styles from './MainPage.css';
-import Button from '@platform-ui/button';
+import ModelTable from '../../components/ModelTable/ModelTable.jsx';
 
 const MainPage = () => (
     <div className={styles.root}>
-        <div> Main </div>
-        <Button>Hi</Button>
+        <ModelTable disabled={false} />
     </div>
 );
 
