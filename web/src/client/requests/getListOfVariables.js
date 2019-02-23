@@ -1,21 +1,20 @@
 import debug from 'debug';
+import {API_URL} from "./constants";
+
 const fetch = require('isomorphic-fetch');
-
 const consoleDebug = debug('server:sendingToClient');
-
-const API_URL = '';
 
 /**
  * Отправляет (res.send()) данные полученные от API
- * @name fetchData
+ * @name getListOfVariables
  * @function
- * @param {object} request
- * @param {object} response
+ * @param {object} req
+ * @param {object} res
  */
-const fetchData = (req, res) => {
-    consoleDebug(req.url.substr(8));
 
-    fetch(`${API_URL}${req.url.substr(8)}`)
+const getListOfVariables = (req, res) => {
+
+    fetch(`${API_URL}/getListOfVariables`)
         .catch(error => {
             consoleDebug(`Fetch data:${error} `);
         })
@@ -29,4 +28,4 @@ const fetchData = (req, res) => {
         });
 };
 
-module.exports = fetchData;
+module.exports = getListOfVariables;

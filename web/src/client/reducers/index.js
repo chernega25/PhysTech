@@ -1,14 +1,11 @@
 import { combineReducers } from 'redux';
 import { routerReducer } from 'react-router-redux';
-import data from './data';
-import path from './path';
-import loader from './loader';
+import fetchReducer from "./fetchReducer";
+
 
 const reducer = combineReducers({
     routing: routerReducer,
-    data,
-    path,
-    loader
+    fetchReducer
 });
 
 export default reducer;

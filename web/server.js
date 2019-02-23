@@ -29,10 +29,21 @@ if (process.env.NODE_ENV === 'development') {
 app.use(require('express').static('public'));
 
 const serverRender = require('./src/serverRender');
-const fetchData = require('./src/client/requests/fetchData');
+const getListOfModels = require('./src/client/requests/getListOfModels');
+const getListOfVariables = require('./src/client/requests/getListOfVariables');
+const getModel = require('./src/client/requests/getModel');
+const updateObjectFactory = require('./src/client/requests/updateObjectFactory');
 
-app.get('/getData', fetchData);
+app.get('/models', getListOfModels);
+app.get('/models/', getModel);
+app.get('/variables', getListOfVariables);
 app.get('*', serverRender);
+
+app.post('/newModel', updateObjectFactory('newModel'));
+app.post('/newVariable', updateObjectFactory('newVariable'));
+app.post('/changeModel', updateObjectFactory('changeModel'));
+app.post('/changeVariable', updateObjectFactory('changeVariable'));
+
 
 app.listen(env.port, env.host);
 consoleDebug(`Running on http://${env.host}:${env.port}`);
