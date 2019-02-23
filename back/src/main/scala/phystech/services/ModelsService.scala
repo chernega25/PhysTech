@@ -9,7 +9,7 @@ import monix.execution.Scheduler
 import phystech.responses._
 import io.circe.generic.auto._
 import io.finch.circe._
-import phystech.data.{CurrentModel, Model, Variable}
+import phystech.data.{CurrentModel, Model, ModelVariable, Variable}
 import phystech.requests.{ChangeModelRequest, NewModelRequest}
 import phystech.storage.mongo.MongoBase
 import shapeless.HList
@@ -21,10 +21,10 @@ class ModelsService(implicit mongo: MongoBase, scheduler: Scheduler) extends End
       mongo.getAllModels.map(_.map(ModelSummary.fromModel)).map(Ok)
     }
 
-  final def getFamilyOfModels: Endpoint[Task, Seq[Model]] =
+  final def getFamilyOfModels: Endpoint[Task, Seq[ModelSummary]] =
     get("getFamilyOfModels" :: param[String]("parentModelId")) { parentId: String =>
       println(s"getFamilyOfModels $parentId")
-      mongo.getModelFamily(parentId).map(Ok)
+      mongo.getModelFamily(parentId).map(_.map(ModelSummary.fromModel)).map(Ok)
     }
 
   final def getListOfVariables: Endpoint[Task, Seq[Variable]] =
@@ -37,6 +37,10 @@ class ModelsService(implicit mongo: MongoBase, scheduler: Scheduler) extends End
       println(s"getModel: $id")
       mongo.getModel(id).map(Ok)
     }
+
+  private def addMissingVariables(variables: Seq[ModelVariable]): Task[Seq[Unit]] = {
+    Task.sequence(variables.map(variable => mongo.createVariableIfMissing(variable.variableName)))
+  }
 
   final def newModel: Endpoint[Task, NewModelResponse] =
     post("newModel" :: jsonBody[NewModelRequest]) { body: NewModelRequest =>
@@ -51,8 +55,9 @@ class ModelsService(implicit mongo: MongoBase, scheduler: Scheduler) extends End
         variableList = body.variableList
       )
       for {
+        _ <- addMissingVariables(model.variableList)
         _ <- mongo.createModel(model)
-        _ <- mongo.createCurrentModel(CurrentModel(id, id, model.modelName))
+        _ <- mongo.createCurrentModel(CurrentModel(id, id, model.modelName, 0L))
       } yield Ok(NewModelResponse(id))
     }
 
@@ -67,6 +72,7 @@ class ModelsService(implicit mongo: MongoBase, scheduler: Scheduler) extends End
       println(s"changeModel: $body")
       for {
         oldModel <- mongo.getModel(body.modelId)
+        _ = if (oldModel.modelName != body.modelName) throw new Exception("Model name must not be changed")
         id = UUID.randomUUID().toString
         version <- mongo.getModelFamily(oldModel.parentModelId).map(_.map(_.version).max + 1)
         model = Model(
@@ -77,7 +83,8 @@ class ModelsService(implicit mongo: MongoBase, scheduler: Scheduler) extends End
           testingStage = 0,
           variableList = body.variableList
         )
-        _ <- mongo.createModel(model)
+        _ <- addMissingVariables(model.variableList)
+        _ <- mongo.addModelToFamily(model)
       } yield Ok(ChangeModelResponse(id, oldModel.parentModelId, version))
     }
 
