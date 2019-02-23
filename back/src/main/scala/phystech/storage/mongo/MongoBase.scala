@@ -28,7 +28,11 @@ class MongoBase(url: String, name: String) {
   private val currentModelCollection: MongoCollection[CurrentModel] = db.getCollection("currentModel")
 
   def createModel(model: Model): Task[Unit] = {
-    modelCollection.insertOne(model).asTask.flatMap(_ => Task.unit)
+    for {
+      sameNameModels <- modelCollection.find(equal("modelName", model.modelName)).asTask
+      _              = if (sameNameModels.nonEmpty) throw new Exception("Model name exists")
+      _              <- modelCollection.insertOne(model).asTask
+    } yield ()
   }
 
   def getAllModels: Task[Seq[Model]] = {
@@ -37,9 +41,9 @@ class MongoBase(url: String, name: String) {
 
   def getModel(id: String): Task[Model] = {
     modelCollection.find(equal("modelId", id)).asTask.map {
-      case Seq() => throw new Exception("Model not found")
+      case Seq()      => throw new Exception("Model not found")
       case Seq(model) => model
-      case _ => throw new Exception(s"Multiple models with id `$id`")
+      case _          => throw new Exception(s"Multiple models with id `$id`")
     }
   }
 

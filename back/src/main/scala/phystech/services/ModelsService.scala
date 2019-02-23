@@ -41,7 +41,6 @@ class ModelsService(implicit mongo: MongoBase, scheduler: Scheduler) extends End
   final def newModel: Endpoint[Task, NewModelResponse] =
     post("newModel" :: jsonBody[NewModelRequest]) { body: NewModelRequest =>
       println(s"newModel: $body")
-      // TODO: Name check
       val id = UUID.randomUUID().toString
       val model = Model(
         modelId = id,
