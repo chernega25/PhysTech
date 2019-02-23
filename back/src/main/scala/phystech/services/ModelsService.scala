@@ -1,45 +1,60 @@
 package phystech.services
 
-import com.twitter.finagle.Service
-import com.twitter.finagle.http.{Request, Response}
+import java.util.UUID
+
 import io.finch.{BadRequest, Ok}
 import io.finch._
 import monix.eval.Task
 import monix.execution.Scheduler
-import phystech.responses.{ChangeModelResponse, ModelSummary, NewModelResponse, NewVariableResponse}
+import phystech.responses.{ChangeModelResponse, ModelSummary, NewModelResponse, VariableNameWrapper}
 import io.circe.generic.auto._
 import io.finch.circe._
 import phystech.data.{Model, ModelVariable, Variable}
-import phystech.requests.{ChangeModelRequest, GetModelRequest, NewModelRequest}
+import phystech.requests.{ChangeModelRequest, NewModelRequest}
+import phystech.storage.mongo.MongoBase
+import shapeless.HList
 
-class ModelsService(implicit scheduler: Scheduler) extends Endpoint.Module[Task] {
+class ModelsService(implicit mongo: MongoBase, scheduler: Scheduler) extends Endpoint.Module[Task] {
 
-  final def getListOfModels: Endpoint[Task, List[ModelSummary]] =
+  final def getListOfModels: Endpoint[Task, Seq[ModelSummary]] =
     get("getListOfModels") { () =>
-      Ok(List(ModelSummary("1", "m019", 3, 2), ModelSummary("1", "m019cl", 5, 5)))
+      mongo.getAllModels.map(_.map(ModelSummary.fromModel)).map(Ok)
     }
 
-  final def getListOfVariables: Endpoint[Task, List[Variable]] =
+  final def getListOfVariables: Endpoint[Task, Seq[Variable]] =
     get("getListOfVariables") { () =>
-      Ok(List(Variable("age", "Возраст человека"), Variable("email_length", "Длина эл. почты")))
+      Ok(Seq(Variable("age", "Возраст человека"), Variable("email_length", "Длина эл. почты")))
     }
 
-  final def getModel: Endpoint[Task, List[Model]] =
-    get("getModel" :: jsonBody[GetModelRequest]) { body: GetModelRequest =>
-      println(s"getModel: $body")
-      Ok(List(Model("431", "123", "m019", 2, 3, List(ModelVariable("age", -17.43, 30), ModelVariable("email_length", 4.647, 15)))))
+  final def getModel: Endpoint[Task, Model] =
+    get("getModel" :: param[String]("modelId")) { id: String =>
+      println(s"getModel: $id")
+      mongo.getModel(id).map(Ok)
     }
 
   final def newModel: Endpoint[Task, NewModelResponse] =
     post("newModel" :: jsonBody[NewModelRequest]) { body: NewModelRequest =>
       println(s"newModel: $body")
-      Ok(NewModelResponse("431"))
+      for {
+        version <- body.parentModelId.map(mongo.countFamily).getOrElse(Task.pure(0L))
+        id = UUID.randomUUID().toString
+        model = Model(
+          modelId = id,
+          parentModelId = body.parentModelId.getOrElse(id),
+          modelName = body.modelName,
+          version = version,
+          testingStage = 0,
+          variableList = body.variableList
+        )
+        _ <- mongo.createModel(model)
+
+      } yield Ok(NewModelResponse(id))
     }
 
-  final def newVariable: Endpoint[Task, NewVariableResponse] =
+  final def newVariable: Endpoint[Task, VariableNameWrapper] =
     post("newVariable" :: jsonBody[Variable]) { body: Variable =>
       println(s"newVariable: $body")
-      Ok(NewVariableResponse(body.variableName))
+      Ok(VariableNameWrapper(body.variableName))
     }
 
   final def changeModel: Endpoint[Task, ChangeModelResponse] =
@@ -48,7 +63,20 @@ class ModelsService(implicit scheduler: Scheduler) extends Endpoint.Module[Task]
       Ok(ChangeModelResponse("497", "319", 4))
     }
 
-  final def toService: Service[Request, Response] = Bootstrap
-    .serve[Application.Json](getListOfModels :+: getListOfVariables :+: getModel :+: newModel :+: newVariable :+: changeModel)
-    .toService
+  final def changeVariable: Endpoint[Task, VariableNameWrapper] =
+    post("changeVariable" :: jsonBody[Variable]) { body: Variable =>
+      println(s"changeVariable $body")
+      Ok(VariableNameWrapper(body.variableName))
+    }
+
+  final def combine[ES <: HList, CTS <: HList](bootstrap: Bootstrap[ES, CTS]) = Bootstrap
+    .serve[Application.Json](
+      (getListOfModels :+: getListOfVariables :+: getModel :+:
+          newModel :+: newVariable :+: changeModel :+:
+          changeVariable) handle {
+        case e: Exception =>
+          println(s"Error: $e")
+          BadRequest(e)
+      }
+    )
 }

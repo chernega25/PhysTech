@@ -1,8 +1,10 @@
-name := "back"
+name := "phystech-back"
 
 version := "0.1"
 
 scalaVersion := "2.12.8"
+
+enablePlugins(JavaAppPackaging)
 
 scalacOptions += "-Ypartial-unification"
 
@@ -16,3 +18,4 @@ libraryDependencies ++= Seq(
   "com.crobox.clickhouse" %% "client" % "0.8.5",
   "org.typelevel" %% "cats-core" % "1.6.0"
 )
+  

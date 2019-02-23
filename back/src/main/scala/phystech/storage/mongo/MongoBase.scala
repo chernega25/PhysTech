@@ -1,29 +1,48 @@
 package phystech.storage.mongo
 
-import org.bson.codecs.configuration.CodecRegistries.{
-  fromProviders,
-  fromRegistries
-}
-import org.bson.codecs.configuration.CodecRegistry
+import monix.eval.Task
+import org.bson.codecs.configuration.CodecRegistries._
 import org.mongodb.scala.bson.codecs.DEFAULT_CODEC_REGISTRY
-import org.mongodb.scala.{MongoClient, MongoDatabase}
+import org.mongodb.scala.{MongoClient, MongoCollection, MongoDatabase}
 import org.mongodb.scala.bson.codecs.Macros._
+import org.mongodb.scala.model.Filters.equal
 import phystech.data.{Model, ModelVariable, Variable}
+import phystech.storage.mongo.mongoSyntax._
 
-object MongoBase {
-  def apply(address: String,
-            dbName: String,
-            codecRegistry: CodecRegistry): MongoDatabase = {
-    val client = MongoClient(address)
-    client.getDatabase(dbName).withCodecRegistry(codecRegistry)
-  }
+class MongoBase(url: String, name: String) {
 
-  def init(url: String = "mongodb://phystech:phystech@209.250.236.189",
-           dbName: String = "phystech"): MongoDatabase = {
-    val codecRegistry = fromRegistries(
-      fromProviders(classOf[ModelVariable], classOf[Model], classOf[Variable]),
-      DEFAULT_CODEC_REGISTRY)
+    private val codecRegistry =
+      fromRegistries(
+        fromProviders(
+          classOf[ModelVariable],
+          classOf[Model],
+          classOf[Variable]
+        ),
+        DEFAULT_CODEC_REGISTRY
+      )
+    private val db = MongoClient(url).getDatabase(name).withCodecRegistry(codecRegistry)
+    private val modelCollection: MongoCollection[Model] = db.getCollection("models")
 
-    MongoBase(url, dbName, codecRegistry)
-  }
+    def createModel(model: Model): Task[Unit] = {
+      modelCollection.insertOne(model).asTask.flatMap(_ => Task.unit)
+    }
+
+    def getAllModels: Task[Seq[Model]] = {
+      modelCollection.find().asTask
+    }
+
+    def getModel(id: String): Task[Model] = {
+      modelCollection.find(equal("modelId", id)).asTask.map {
+        case Seq() => throw new Exception("Model not found")
+        case Seq(model) => model
+        case _ => throw new Exception(s"Multiple models with id `$id`")
+      }
+    }
+
+    def countFamily(parentId: String): Task[Long] = {
+      modelCollection.countDocuments(equal("parentModelId", parentId)).asTask.map{
+        case Seq(size) => size
+        case _ => throw new Exception("Something has gone wrong with mongo. Again")
+      }
+    }
 }

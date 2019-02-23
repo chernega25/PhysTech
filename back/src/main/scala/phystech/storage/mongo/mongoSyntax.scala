@@ -3,7 +3,7 @@ package phystech.storage.mongo
 import monix.eval.Task
 import org.mongodb.scala.{Observable => MObservable}
 
-object MObservableToTask {
+object mongoSyntax {
   def apply[T](obs: MObservable[T]): Task[Seq[T]] = {
     Task.deferFuture(obs.toFuture())
   }
