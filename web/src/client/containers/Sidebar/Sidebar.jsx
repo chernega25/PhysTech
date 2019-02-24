@@ -42,7 +42,7 @@ class Sidebar extends Component {
         } = this.props;
 
         const components = listOfCurrentModels ? listOfCurrentModels.map(x => ({
-            component: props => <Button {...props}>{x.modelName}</Button>,
+            component: props => <Button {...props} wide>{x.modelName}</Button>,
             path: `/models/${x.modelName}/${x.version}`
         })) : [];
 
