@@ -8,13 +8,15 @@ const matchConfig = [
 
     {
         path: '/models/:name/:version',
-        component: ModelsPage,
-        exact: false
+        component: ModelsPage
+    },
+    {
+        path: '/models/:name',
+        component: ModelsPage
     },
     {
         path: '/models',
-        component: ModelsPage,
-        exact: false
+        component: ModelsPage
     },
     {
         path: '/variables',

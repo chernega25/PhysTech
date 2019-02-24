@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
 
 import styles from './Sidebar.css';
+import {setHistory} from "../../actions/setHistory";
+import {connect} from "react-redux";
 
 
 class Sidebar extends Component {
@@ -16,6 +18,8 @@ class Sidebar extends Component {
         return () =>  {
             console.log(path);
             this.props.history.push(`${path}`);
+            this.props.setHistory(path);
+
         };
     }
 
@@ -53,4 +57,11 @@ class Sidebar extends Component {
 
 }
 
-export default withRouter(Sidebar);
+const mapStateToProps = (state) =>
+    ({});
+
+const mapDispatchToProps = {
+    setHistory
+};
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Sidebar));

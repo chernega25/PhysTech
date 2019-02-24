@@ -32,8 +32,8 @@ const getListOfVariables = require('./src/client/requests/getListOfVariables');
 const getModel = require('./src/client/requests/getModel');
 const updateObjectFactory = require('./src/client/requests/updateObjectFactory');
 
+app.get('/getModelById/*', getModel);
 app.get('/getModels', getListOfModels);
-app.get('/getModels/', getModel);
 app.get('/getVariables', getListOfVariables);
 app.get('*', serverRender);
 

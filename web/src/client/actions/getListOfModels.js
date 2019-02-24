@@ -3,13 +3,14 @@ import {
     FETCH_ERROR,
     FETCH_LIST_OF_MODELS
 } from './actionTypes';
+import {URL} from './constants'
 
 const consoleDebug = debug('client:actions');
 
 export const getListOfModels = () => async dispatch => {
     consoleDebug("wwwwwwwww");
 
-    return fetch(`http://0.0.0.0:8080/getModels`)
+    return fetch(`${URL}/getModels`)
         .catch(error => {
             consoleDebug(`Fetch data: ${error} `);
             dispatch({
@@ -29,8 +30,6 @@ export const getListOfModels = () => async dispatch => {
         })
         .then(([listOfModels, listOfCurrentModels]) => {
 
-            consoleDebug([listOfModels, listOfCurrentModels]);
-            
             dispatch({
                 type: FETCH_LIST_OF_MODELS,
                 payload: { listOfModels, listOfCurrentModels }

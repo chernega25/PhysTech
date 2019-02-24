@@ -2,12 +2,13 @@ import debug from 'debug';
 import {
     FETCH_ERROR
 } from './actionTypes';
+import {URL} from './constants'
 
 const consoleDebug = debug('client:actions');
 
 export const updateObjectFactory = (action, object) => (data) => async dispatch => {
 
-    fetch(`/${action}${object}`, {
+    fetch(`${URL}/${action}${object}`, {
         method: 'POST',
         body: data
     })

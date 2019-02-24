@@ -3,22 +3,32 @@ import {
     FETCH_ERROR,
     FETCH_MODEL
 } from './actionTypes';
+import {URL} from './constants'
 
 const consoleDebug = debug('client:actions');
 
 export const getModel = (modelId) => async dispatch => {
 
-    fetch(`/getModels/${modelId}`)
+    console.log(modelId);
+    fetch(`${URL}/getModelById/${modelId}`)
+        .catch(error => {
+            consoleDebug(`Fetch data: ${error} `);
+            dispatch({
+                type: FETCH_ERROR,
+                payload: error,
+                error: true
+            });
+        })
         .then(res => res.json())
-        .then((data) => {
-
+        .then(({ model, family }) => {
+            consoleDebug(model);
             dispatch({
                 type: FETCH_MODEL,
-                payload: data // {model, family}
+                payload: { model, family }
             });
         })
         .catch(error => {
-            consoleDebug(`Fetch data: ${error} `);
+            consoleDebug(`Parse data: ${error} `);
             dispatch({
                 type: FETCH_ERROR,
                 payload: error,

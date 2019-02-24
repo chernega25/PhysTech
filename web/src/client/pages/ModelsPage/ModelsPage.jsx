@@ -1,31 +1,33 @@
 import React from 'react';
 import styles from './ModelsPage.css';
-import ModelTable from '../../components/ModelTable/ModelTable.jsx';
+import Models from '../../containers/Models/Models.jsx';
 import Button from '@platform-ui/button';
 import Sidebar from '../../containers/Sidebar/Sidebar.jsx';
 import { getListOfModels } from "../../actions/getListOfModels";
 import { connect } from "react-redux";
 import { getModel } from "../../actions/getModel";
+import {withRouter} from 'react-router-dom';
+
 
 class ModelsPage extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            exists: true
+            modelId: "",
+            exists: false
         }
-
     }
 
     componentWillMount() {
 
-        console.log("hey");
         const {
             getListOfModels,
             getModel,
             match,
             listOfModels,
-            listOfCurrentModels
+            listOfCurrentModels,
+            history
         } = this.props;
 
 
@@ -39,30 +41,27 @@ class ModelsPage extends React.Component {
                 const model = listOfModels.find(x => x.modelName === match.params.name
                     && x.version.toString() === match.params.version);
 
+                console.log(model);
                 if (model) {
-                    getModel(model.modelId);
-                } else {
-                    this.setState({exists: false})
+                    this.setState({modelId: model.id});
+                    this.setState({exists: true})
                 }
             } else {
                 const model = listOfCurrentModels.find(x => x.modelName === match.params.name);
 
                 if (model) {
-                    getModel(model.currentModelId);
-                } else {
-                    this.setState({exists: false})
+                    this.setState({modelId: model.currentModelId});
+                    this.setState({exists: true})
                 }
             }
         }
 
     }
 
+
     render() {
         const {
-            match,
-            listOfCurrentModels,
-            model,
-            family
+            listOfCurrentModels
         } = this.props;
         console.log(listOfCurrentModels);
 
@@ -75,22 +74,21 @@ class ModelsPage extends React.Component {
                         path: `/models/${x.modelName}/${x.version}`
                     })) : []}
                 />
-                <div className={styles.wrapper}>
-                    {this.state.exists ? <ModelTable
-                        modelName={match.params.name}
-                    /> : "Пошёл нахуй"}
-                </div>
+                <Models
+                    history={this.props.history}
+                    modelId={this.state.modelId}
+                />
             </div>
         )
     }
 }
 
-const mapStateToProps = ({ data: { listOfModels, listOfCurrentModels, model, family }}) =>
-    ({ listOfModels, listOfCurrentModels, model, family });
+const mapStateToProps = ({ data: { listOfModels, listOfCurrentModels }}) =>
+    ({ listOfModels, listOfCurrentModels });
 
 const mapDispatchToProps = {
     getListOfModels,
     getModel
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ModelsPage);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ModelsPage));

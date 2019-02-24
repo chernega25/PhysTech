@@ -8,3 +8,5 @@ export const FETCH_LIST_OF_VARIABLES = 'FETCH_LIST_OF_VARIABLES';
 export const FETCH_MODEL = 'FETCH_MODEL';
 export const FETCH_MODEL_ID = 'FETCH_MODEL_ID';
 
+export const HISTORY = 'HISTORY';
+
