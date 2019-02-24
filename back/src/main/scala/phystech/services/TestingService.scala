@@ -2,33 +2,23 @@ package phystech.services
 
 import java.nio.charset.Charset
 
-import io.finch.Endpoint
-import monix.eval.Task
-import monix.execution.Scheduler
-import io.finch.{BadRequest, Ok}
-import io.finch._
+import akka.stream.Materializer
+import com.crobox.clickhouse.ClickhouseClient
 import com.twitter.io.Buf
-import com.twitter.concurrent.AsyncStream
-import io.finch.{BadRequest, Ok}
-import io.finch._
+import io.finch.Decode.Dispatchable
+import io.finch.{BadRequest, Endpoint, Ok, _}
 import monix.eval.Task
 import monix.execution.Scheduler
-import phystech.responses.{
-  ChangeModelResponse,
-  ModelSummary,
-  NewModelResponse,
-  VariableNameWrapper
-}
-import io.circe.generic.auto._
-import io.finch.Decode.Dispatchable
-import io.finch.circe._
 import phystech.calculate.CalculateModel
-import phystech.data.{Model, ModelVariable, Variable}
-import phystech.requests.{ChangeModelRequest, NewModelRequest}
+import phystech.data.{Model, Request}
+import phystech.storage.clickhouse.ClickHouseBase
 import phystech.storage.mongo.MongoBase
 import shapeless.HList
 
-class TestingService(implicit scheduler: Scheduler, mongo: MongoBase)
+class TestingService(implicit scheduler: Scheduler,
+                     mongo: MongoBase,
+                     mat: Materializer,
+                     clickHouse: ClickHouseBase)
     extends Endpoint.Module[Task] {
 
   private def calcCsv(model: Model, csv: String): String = {
@@ -80,10 +70,24 @@ class TestingService(implicit scheduler: Scheduler, mongo: MongoBase)
                 .withHeader("Content-Type", "text/csv"))
     }
 
+  final def testSecondStage: Endpoint[Task, Unit] =
+    post("testSecondStage" :: param[String]("modelId")) { id: String =>
+      {
+        for {
+          model <- mongo.getModel(id)
+          strings <- clickHouse
+            .read(
+              s"select * from requests where modelId = ${model.modelId} limit 100")
+            .toListL
+          requests = strings.map(Request.fromString)
+        } yield Ok(())
+      }
+    }
+
   final def combine[ES <: HList, CTS <: HList](bootstrap: Bootstrap[ES, CTS]) =
     bootstrap
       .serve[Text.Plain](
-        (testFirstStage) handle {
+        (testFirstStage :+: testSecondStage) handle {
           case e: Exception =>
             println(s"Error: $e")
             BadRequest(e)

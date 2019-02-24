@@ -36,7 +36,7 @@ class MongoBase(url: String, name: String) {
   }
 
   def addModelToFamily(model: Model): Task[Unit] = {
-    modelCollection.insertOne(model).asTask.map(_ => Task.unit)
+    modelCollection.insertOne(model).asTask.flatMap(_ => Task.unit)
   }
 
   def getAllModels: Task[Seq[Model]] = {
