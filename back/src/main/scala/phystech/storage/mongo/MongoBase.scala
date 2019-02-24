@@ -5,7 +5,8 @@ import org.bson.codecs.configuration.CodecRegistries._
 import org.mongodb.scala.bson.codecs.DEFAULT_CODEC_REGISTRY
 import org.mongodb.scala.{MongoClient, MongoCollection}
 import org.mongodb.scala.bson.codecs.Macros._
-import org.mongodb.scala.model.Filters.equal
+import org.mongodb.scala.model.Filters._
+import org.mongodb.scala.model.Updates._
 import phystech.data.{CurrentModel, Model, ModelVariable, Variable}
 import phystech.storage.mongo.mongoSyntax._
 
@@ -49,6 +50,10 @@ class MongoBase(url: String, name: String) {
       case Seq(model) => model
       case _          => throw new Exception(s"Multiple models with id `$id`")
     }
+  }
+
+  def updateMedelStage(id: String): Task[Unit] = {
+    modelCollection.updateOne(equal("modelId", id), inc("testingStage", 1)).asTask.map(_ => ())
   }
 
   def getModelFamily(parentId: String): Task[Seq[Model]] = {

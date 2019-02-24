@@ -73,6 +73,12 @@ class TestingService(implicit scheduler: Scheduler,
           .mkString("\n"))
     }
 
+  final def toNextStage: Endpoint[Task, Unit] =
+    get("toNextStage" :: param[String]("modelId")) {
+      id: String =>
+        mongo.updateMedelStage(id).map(_ => Ok(()))
+    }
+
   final def testFirstStage: Endpoint[Task, String] =
     post(
       "testFirstStage" :: param[String]("modelId") :: body[String,
@@ -116,7 +122,7 @@ class TestingService(implicit scheduler: Scheduler,
   final def combine[ES <: HList, CTS <: HList](bootstrap: Bootstrap[ES, CTS]) =
     bootstrap
       .serve[Text.Plain](
-        (testFirstStage :+: testSecondStage) handle {
+        (testFirstStage :+: testSecondStage :+: toNextStage) handle {
           case e: Exception =>
             println(s"Error: $e")
             BadRequest(e)
