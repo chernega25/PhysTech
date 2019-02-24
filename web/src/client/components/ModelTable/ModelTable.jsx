@@ -3,14 +3,21 @@ import Text from '@platform-ui/text';
 import TableCustom from './TableCustom.jsx';
 import Select from 'react-select';
 import styles from './ModelTable.css'
+import StepperCustom from "../../containers/Stepper/Stepper.jsx";
 
 class ModelTable extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            checkingStatus: props.checkingStatus
+        }
     }
 
     handleSave = (variableList) => {
-        this.setState({ variableList: variableList })
+        this.setState({
+            variableList: variableList,
+            checkingStatus: 0
+        })
     };
 
     render() {
@@ -38,6 +45,7 @@ class ModelTable extends Component {
                     variableList={model.variableList}
                     onSave={this.handleSave}
                 />
+                {this.state.checkingStatus >= 0 && <StepperCustom isPending={true}/>}
             </div>
         );
     }
