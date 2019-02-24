@@ -119,10 +119,18 @@ class TestingService(implicit scheduler: Scheduler,
       }
     }
 
+  final def deploy: Endpoint[Task, Unit] =
+    post("deploy" :: param[String]("modelId")) { modelId: String =>
+      for {
+        model <- mongo.getModel(modelId)
+        _ <- mongo.setCurrentModel(model)
+      } yield Ok(())
+    }
+
   final def combine[ES <: HList, CTS <: HList](bootstrap: Bootstrap[ES, CTS]) =
     bootstrap
       .serve[Text.Plain](
-        (testFirstStage :+: testSecondStage :+: toNextStage) handle {
+        (testFirstStage :+: testSecondStage :+: toNextStage :+: deploy) handle {
           case e: Exception =>
             println(s"Error: $e")
             BadRequest(e)

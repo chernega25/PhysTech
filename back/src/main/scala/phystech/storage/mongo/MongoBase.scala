@@ -102,4 +102,11 @@ class MongoBase(url: String, name: String) {
       case _          => throw new Exception(s"Multiple current models with parentModelId `$parentModelId`")
     }
   }
+
+  def setCurrentModel(model: Model): Task[Unit] = {
+    currentModelCollection.replaceOne(
+      equal("parentModelId", model.parentModelId),
+      CurrentModel(model.modelId, model.parentModelId, model.modelName, model.version)
+    ).asTask.flatMap(_ => Task.unit)
+  }
 }
