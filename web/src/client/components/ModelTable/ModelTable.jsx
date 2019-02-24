@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Text from '@platform-ui/text';
 import TableCustom from './TableCustom.jsx';
 import Select from 'react-select';
+import Stepper from 'react-stepper-horizontal';
 import styles from './ModelTable.css'
 
 let mock = [{variableName: 'name', coefficient: '0.3', defaultValue: '0.1'},
@@ -19,8 +20,13 @@ class ModelTable extends Component {
         this.state = {
             variableList: this.getDataByModelName(props.modelName),
             disabled: true,
-            selectedVersion: this.getVersionsByModelName(props.modelName)
+            selectedVersion: this.getVersionsByModelName(props.modelName),
+            checkedStatus: this.getStatusByModelName(props.modelName)
         }
+    }
+
+    getStatusByModelName = (modelName) => {
+        return undefined
     }
 
     getDataByModelName = (modelName) => {
@@ -36,11 +42,15 @@ class ModelTable extends Component {
     }
 
     handleSave = (variableList) => {
-        this.setState({ variableList: variableList })
+        this.setState({
+            variableList: variableList,
+            checkedStatus: 0
+        })
     }
 
     render() {
         const { modelName } = this.props;
+        const { checkedStatus, selectedVersion, variableList } = this.state;
         return (
             <div className={styles.header}>
                 <div className={styles.left}>
@@ -50,15 +60,22 @@ class ModelTable extends Component {
                 </div>
                 <div className={styles.right}>
                     <Select
-                        value={this.state.selectedVersion}
+                        value={selectedVersion}
                         options={options_mock}
                         onChange={this.handleChangeVersion}
                     />
                 </div>
                 <TableCustom
-                    variableList={this.state.variableList}
+                    variableList={variableList}
                     onSave={this.handleSave}
                 />
+                {checkedStatus >= 0 && <Stepper
+                    steps={ [
+                        {title: 'Тестовая выборка'},
+                        {title: 'Исторические данные'},
+                        {title: 'Аналитик'}
+                        ] }
+                    activeStep={checkedStatus} />}
             </div>
         );
     }
