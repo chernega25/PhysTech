@@ -12,14 +12,9 @@ class TableCustom extends Component {
             variableList: props.variableList,
             disabled: true
         }
-        this.handleInputChange = this.handleInputChange.bind(this)
-        this.handleAddRow = this.handleAddRow.bind(this)
-        this.handleEdit = this.handleEdit.bind(this)
-        this.handleCancel = this.handleCancel.bind(this)
-        this.handleSave = this.handleSave.bind(this)
     }
 
-    handleInputChange(value, name) {
+    handleInputChange = (value, name) => {
         const [column, row] = name.split('_');
         this.setState(({ variableList }) => ({
             variableList: [
@@ -33,27 +28,24 @@ class TableCustom extends Component {
         }));
     }
 
-    handleEdit() {
+    handleEdit = () =>
         this.setState({ disabled: false })
-    }
 
-    handleCancel() {
+    handleCancel = () =>
         this.setState({
             variableList: this.props.variableList,
             disabled: true
         })
-    }
 
-    handleAddRow() {
+    handleAddRow = () =>
         this.setState(({ variableList }) => ({
             variableList: [
                 ...variableList,
                 {variableName: '', coefficient: '', defaultValue: '0.1'}
             ]
         }));
-    }
 
-    handleSave() {
+    handleSave = () => {
         this.props.onSave(this.state.variableList);
         this.setState({
             disabled: true
