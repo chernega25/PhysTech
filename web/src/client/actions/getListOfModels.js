@@ -30,11 +30,12 @@ export const getListOfModels = () => async dispatch => {
         })
         .then(([listOfModels, listOfCurrentModels]) => {
 
-            dispatch({
+            consoleDebug("yyyyyy");
+            
+            return dispatch({
                 type: FETCH_LIST_OF_MODELS,
                 payload: { listOfModels, listOfCurrentModels }
             });
-            consoleDebug("yyyyyy");
         })
         .catch(error => {
             consoleDebug(`Pars data: ${error} `);

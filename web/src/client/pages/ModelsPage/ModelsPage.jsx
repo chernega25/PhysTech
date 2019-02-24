@@ -29,7 +29,7 @@ class ModelsPage extends React.Component {
         } = this.props;
 
 
-        getListOfModels().then( ({ listOfModels, listOfCurrentModels }) => {
+        getListOfModels().then( () => {
 
             if (match.params.name) {
                 console.log(match.params.name);
@@ -73,7 +73,9 @@ class ModelsPage extends React.Component {
                 />
                 <div className={styles.wrapper}>
                     {console.log(this.state)}
-                    {this.state.exists ? <div/> : "Пошёл нахуй"}
+                    {this.state.exists ? <ModelTable
+                        modelName={match.params.name}
+                    /> : "Пошёл нахуй"}
                 </div>
             </div>
         )
