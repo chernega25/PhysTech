@@ -89,4 +89,12 @@ class MongoBase(url: String, name: String) {
   def getCurrentModels: Task[Seq[CurrentModel]] = {
     currentModelCollection.find().asTask
   }
+
+  def getCurrentModel(parentModelId: String): Task[CurrentModel] = {
+    currentModelCollection.find(equal("parentModelId", parentModelId)).asTask.map {
+      case Seq()      => throw new Exception("Current model not found")
+      case Seq(model) => model
+      case _          => throw new Exception(s"Multiple current models with parentModelId `$parentModelId`")
+    }
+  }
 }
