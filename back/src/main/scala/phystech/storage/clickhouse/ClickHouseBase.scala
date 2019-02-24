@@ -10,8 +10,8 @@ import phystech.storage.clickhouse.AkkaStreamToObservable._
 class ClickHouseBase(config: Config, dbName: String)(implicit mat: Materializer) {
   private val client = new ClickhouseClient(config, dbName)
 
-  def read(req: String): Observable[String] = {
-    client.source(req).asObservable
+  def read(req: String): Task[List[String]] = {
+    Task.deferFuture(client.query(req)).map(_.split("\n").toList)
   }
 
   def write(req: String): Task[String] = {
