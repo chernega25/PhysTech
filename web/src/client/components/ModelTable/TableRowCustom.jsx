@@ -9,30 +9,22 @@ class TableRowCustom extends Component {
     }
 
     render() {
-        const { id, row: {variableName, coefficient, defaultValue} } = this.props;
+        const { id, row } = this.props;
+        const row_arr = Object.keys(row).map(function(key) {
+            return [key, row[key]];
+        });
         return (
             <TableRow>
-                <TableCellCustom
-                    id={id}
-                    name={'variableName'}
-                    value={variableName}
-                    disabled={this.props.disabled}
-                    onChange={this.props.onChange}
-                />
-                <TableCellCustom
-                    id={id}
-                    name={'coefficient'}
-                    value={coefficient}
-                    disabled={this.props.disabled}
-                    onChange={this.props.onChange}
-                />
-                <TableCellCustom
-                    id={id}
-                    name={'defaultValue'}
-                    value={defaultValue}
-                    disabled={this.props.disabled}
-                    onChange={this.props.onChange}
-                />
+                {row_arr.map(([name, value], i) =>
+                    (<TableCellCustom
+                        id={id}
+                        key={i}
+                        name={name}
+                        value={value}
+                        disabled={this.props.disabled}
+                        onChange={this.props.onChange}
+                    />)
+                )}
                 <TableCell>
                     <Button
                         theme='secondary'

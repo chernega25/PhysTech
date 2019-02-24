@@ -77,20 +77,17 @@ class TableCustom extends Component {
             <div>
                 <Table>
                     <TableHeader>
-                        <TableHeaderCell>
-                            Переменная
-                        </TableHeaderCell>
-                        <TableHeaderCell textAlign="center">
-                            Вес
-                        </TableHeaderCell>
-                        <TableHeaderCell textAlign="right">
-                            Значение по умолчанию
-                        </TableHeaderCell>
+                        {['Переменная', 'Вес', 'Значение по умолчанию'].map((name, i) =>
+                            (<TableHeaderCell key={i} textAlign='center'>
+                                {name}
+                            </TableHeaderCell>)
+                        )}
                     </TableHeader>
                     {variableList.map((row, id) =>
                         (<TableRowCustom
                             row={row}
                             id={id}
+                            key={id}
                             disabled={disabled}
                             onChange={this.handleInputChange}
                             onDeleteRow={this.handleDeleteRow(id)}
