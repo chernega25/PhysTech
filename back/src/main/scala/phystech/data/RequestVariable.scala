@@ -1,16 +1,15 @@
 package phystech.data
 
-import java.util.UUID
 
-case class RequestVariable(requestId: UUID, variableName: String, variableValue: Double) {
-  override def toString: String = "'" + requestId + "'" + ", '" + variableName + "', " + variableValue
+case class RequestVariable(requestId: String, variableName: String, variableValue: Double) {
+  override def toString: String = s"'$requestId','$variableName',$variableValue"
 
-  def toInsertQuery = "insert into request_variables values (" + toString + ")"
+  def toInsertQuery = "insert into requestVariables values (" + toString + ")"
 }
 
 object RequestVariable {
   def fromString(str: String): RequestVariable = {
     val arr = str.split("\\s+")
-    RequestVariable(UUID.fromString(arr(0)), arr(1), arr(2).toDouble)
+    RequestVariable(arr(0), arr(1), arr(2).toDouble)
   }
 }
