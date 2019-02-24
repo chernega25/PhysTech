@@ -4,14 +4,14 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 
-case class Request(id: UUID,
+case class Request(id: String,
                    response: Double,
+                   parentId: String,
                    modelId: String,
                    date: LocalDateTime) {
   import Request.pattern
   override def toString: String =
-    "'" + id + "'" + ", " + response + ", '" + modelId + "', '" + date.format(
-      pattern) + "'"
+    s"'$id',$response,'$parentId','$modelId','${date.format(pattern)}'"
 
   def toInsertQuery = "insert into requests values (" + toString + ")"
 }
@@ -22,9 +22,10 @@ object Request {
 
   def fromString(str: String): Request = {
     val arr = str.split("\\s+")
-    Request(UUID.fromString(arr(0)),
+    Request(arr(0),
             arr(1).toDouble,
             arr(2),
-            LocalDateTime.parse(arr(3) + " " + arr(4), pattern))
+            arr(3),
+            LocalDateTime.parse(arr(4) + " " + arr(5), pattern))
   }
 }
