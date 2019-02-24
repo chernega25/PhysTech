@@ -5,7 +5,7 @@ import data from "./data";
 
 const reducer = combineReducers({
     routing: routerReducer,
-    fetchReducer: data
+    data
 });
 
 export default reducer;

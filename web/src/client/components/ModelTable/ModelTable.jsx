@@ -4,59 +4,38 @@ import TableCustom from './TableCustom.jsx';
 import Select from 'react-select';
 import styles from './ModelTable.css'
 
-let mock = [{variableName: 'name', coefficient: '0.3', defaultValue: '0.1'},
-            {variableName: 'age', coefficient: '0.7', defaultValue: '0.2'}];
-
-const options_mock = [
-    { value: '1', label: 'v1' },
-    { value: '2', label: 'v2' },
-    { value: '3', label: 'v3' }
-];
-
 class ModelTable extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            variableList: this.getDataByModelName(props.modelName),
-            disabled: true,
-            selectedVersion: this.getVersionsByModelName(props.modelName)
-        }
-    }
-
-    getDataByModelName = (modelName) => {
-        return mock
-    }
-
-    getVersionsByModelName = (modelName) => {
-        return options_mock
-    }
-
-    handleChangeVersion = (selectedVersion) => {
-        this.setState({ selectedVersion });
     }
 
     handleSave = (variableList) => {
         this.setState({ variableList: variableList })
-    }
+    };
 
     render() {
-        const { modelName } = this.props;
+        const {
+            model = {},
+            versions = {},
+            handleChangeVersion
+        } = this.props;
+        console.log(model);
         return (
             <div className={styles.header}>
                 <div className={styles.left}>
                     <Text size={24}>
-                        Модель {modelName}
+                        Модель {model.modelName}
                     </Text>
                 </div>
                 <div className={styles.right}>
                     <Select
-                        value={this.state.selectedVersion}
-                        options={options_mock}
-                        onChange={this.handleChangeVersion}
+                        value={{ value: `${model.version}`, label: `v${model.version}` }}
+                        options={versions}
+                        onChange={handleChangeVersion}
                     />
                 </div>
                 <TableCustom
-                    variableList={this.state.variableList}
+                    variableList={model.variableList}
                     onSave={this.handleSave}
                 />
             </div>

@@ -3,18 +3,21 @@ import VariablesPage from './client/pages/VariablesPage/VariablesPage.jsx';
 import AnalyticsPage from './client/pages/AnalyticsPage/AnalyticsPage.jsx';
 import LoginPage from './client/pages/LoginPage/LoginPage.jsx';
 import Main from './client/pages/MainPage/MainPage.jsx';
+import Models from './client/containers/Models/Models.jsx';
 
 const matchConfig = [
 
-    {
-        path: '/models/:name',
-        component: ModelsPage,
-        exact: false
-    },
+    // {
+    //     path: '/models/:name/:version',
+    //     component: Models
+    // },
+    // {
+    //     path: '/models/:name',
+    //     component: Models
+    // },
     {
         path: '/models',
-        component: ModelsPage,
-        exact: false
+        component: Models
     },
     {
         path: '/variables',
@@ -22,7 +25,7 @@ const matchConfig = [
         exact: false
     },
     {
-        path: '/analitics',
+        path: '/analytics',
         component: AnalyticsPage,
         exact: false
     },

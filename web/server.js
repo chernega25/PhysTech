@@ -32,9 +32,9 @@ const getListOfVariables = require('./src/client/requests/getListOfVariables');
 const getModel = require('./src/client/requests/getModel');
 const updateObjectFactory = require('./src/client/requests/updateObjectFactory');
 
-app.get('/models', getListOfModels);
-app.get('/models/', getModel);
-app.get('/variables', getListOfVariables);
+app.get('/getModelById/*', getModel);
+app.get('/getModels', getListOfModels);
+app.get('/getVariables', getListOfVariables);
 app.get('*', serverRender);
 
 app.post('/newModel', updateObjectFactory('newModel'));

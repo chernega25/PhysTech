@@ -13,8 +13,8 @@ const consoleDebug = debug('server:sendingToClient');
  */
 
 const getModel = (req, res) => {
-
-    fetch(`${API_URL}/getModel?modelId=${req.url.substr(9)}`)
+    consoleDebug(req.url.substr(15));
+    fetch(`${API_URL}/getModel?modelId=${req.url.substr(14)}`)
         .catch(error => {
             consoleDebug(`Fetch data:${error} `);
         })
@@ -23,6 +23,7 @@ const getModel = (req, res) => {
             consoleDebug(`Parse data:${error} `);
         })
         .then(model => {
+            console.log(model);
             fetch(`${API_URL}/getFamilyOfModels?parentModelId=${model.parentModelId}`)
                 .catch(error => {
                     consoleDebug(`Fetch data:${error} `);
