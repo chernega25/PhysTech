@@ -29,37 +29,40 @@ class ModelsPage extends React.Component {
         } = this.props;
 
 
-        getListOfModels().then( () => {
+        getListOfModels();
 
-            if (match.params.name) {
-                console.log(match.params.name);
-                if (match.params.version) {
-                    console.log(match.params.version);
-                    const model = listOfModels.find(x => x.modelName === match.params.name
-                        && x.version === match.params.version);
+        if (match.params.name) {
+            console.log(match.params.name);
+            if (match.params.version) {
+                console.log(match.params.version);
+                console.log(listOfModels);
+                const model = listOfModels.find(x => x.modelName === match.params.name
+                    && x.version.toString() === match.params.version);
 
-                    if (model) {
-                        getModel(model.modelId);
-                    } else {
-                        this.setState({exists: false})
-                    }
+                if (model) {
+                    getModel(model.modelId);
                 } else {
-                    const model = listOfCurrentModels.find(x => x.modelName === match.params.name);
+                    this.setState({exists: false})
+                }
+            } else {
+                const model = listOfCurrentModels.find(x => x.modelName === match.params.name);
 
-                    if (model) {
-                        getModel(model.currentModelId);
-                    } else {
-                        this.setState({exists: false})
-                    }
+                if (model) {
+                    getModel(model.currentModelId);
+                } else {
+                    this.setState({exists: false})
                 }
             }
-        });
+        }
+
     }
 
     render() {
         const {
             match,
-            listOfCurrentModels
+            listOfCurrentModels,
+            model,
+            family
         } = this.props;
         console.log(listOfCurrentModels);
 
@@ -69,7 +72,7 @@ class ModelsPage extends React.Component {
                     location
                     components={listOfCurrentModels ? listOfCurrentModels.map(x => ({
                         component: props => <Button {...props}>{x.modelName}</Button>,
-                        path: `/models/${x.modelName}`
+                        path: `/models/${x.modelName}/${x.version}`
                     })) : []}
                 />
                 <div className={styles.wrapper}>
@@ -82,7 +85,8 @@ class ModelsPage extends React.Component {
     }
 }
 
-const mapStateToProps = ({ data: { listOfModels, listOfCurrentModels }}) => ({ listOfModels, listOfCurrentModels });
+const mapStateToProps = ({ data: { listOfModels, listOfCurrentModels, model, family }}) =>
+    ({ listOfModels, listOfCurrentModels, model, family });
 
 const mapDispatchToProps = {
     getListOfModels,

@@ -1,7 +1,6 @@
 const consoleDebug = require('debug')('server');
 const app = (require('express'))();
 const env = require('./src/env');
-const URL = require('./constants');
 
 require('css-modules-require-hook')({
     generateScopedName: '[name]_[local]'

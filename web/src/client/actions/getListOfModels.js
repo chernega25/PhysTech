@@ -5,12 +5,11 @@ import {
 } from './actionTypes';
 
 const consoleDebug = debug('client:actions');
-const URL = require('../../../constants');
 
 export const getListOfModels = () => async dispatch => {
     consoleDebug("wwwwwwwww");
 
-    return fetch(`${URL}/getModels`)
+    return fetch(`http://0.0.0.0:8080/getModels`)
         .catch(error => {
             consoleDebug(`Fetch data: ${error} `);
             dispatch({
@@ -30,9 +29,9 @@ export const getListOfModels = () => async dispatch => {
         })
         .then(([listOfModels, listOfCurrentModels]) => {
 
-            consoleDebug("yyyyyy");
+            consoleDebug([listOfModels, listOfCurrentModels]);
             
-            return dispatch({
+            dispatch({
                 type: FETCH_LIST_OF_MODELS,
                 payload: { listOfModels, listOfCurrentModels }
             });
