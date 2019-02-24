@@ -67,13 +67,6 @@ class ModelsPage extends React.Component {
 
         return (
             <div className={styles.root}>
-                <Sidebar
-                    location
-                    components={listOfCurrentModels ? listOfCurrentModels.map(x => ({
-                        component: props => <Button {...props}>{x.modelName}</Button>,
-                        path: `/models/${x.modelName}/${x.version}`
-                    })) : []}
-                />
                 <Models
                     history={this.props.history}
                     modelId={this.state.modelId}

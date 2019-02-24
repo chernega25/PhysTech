@@ -12,57 +12,57 @@ class Models extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            // exists: false
+            exists: false
         };
 
 
     }
-
-    componentWillMount() {
-
-        const {
-            getListOfModels,
-            getModel,
-            match,
-            listOfModels,
-            listOfCurrentModels,
-            history,
-            newHistory
-        } = this.props;
-
-        console.log(`Name ${match.params.name}`);
-        console.log(`Var ${match.params.version}`);
-        console.log(history);
-        console.log(newHistory);
-
-
-        getModel(this.props.modelId);
-        // getListOfModels();
-        //
-        // if (match.params.name) {
-        //     console.log(match.params.name);
-        //     if (match.params.version) {
-        //         console.log(match.params.version);
-        //         console.log(listOfModels);
-        //         const model = listOfModels.find(x => x.modelName === match.params.name
-        //             && x.version.toString() === match.params.version);
-        //
-        //         console.log(model);
-        //         if (model && !this.state.exists) {
-        //             getModel(model.id);
-        //             this.setState({exists: true})
-        //         }
-        //     } else {
-        //         const model = listOfCurrentModels.find(x => x.modelName === match.params.name);
-        //
-        //         if (model && !this.state.exists) {
-        //             getModel(model.currentModelId);
-        //             this.setState({exists: true})
-        //         }
-        //     }
-        // }
-
-    }
+    //
+    // componentWillMount() {
+    //
+    //     const {
+    //         getModel,
+    //         listOfModels,
+    //         listOfCurrentModels,
+    //         history,
+    //         newHistory,
+    //         location
+    //     } = this.props;
+    //
+    //     // console.log(`Name ${name}`);
+    //     // console.log(`Var ${version}`);
+    //     console.log(history);
+    //     console.log(newHistory);
+    //
+    //     const p = location.pathname.split("/");
+    //     const name = p[2];
+    //     const version = p[3];
+    //     console.log(p);
+    //     console.log(name);
+    //     console.log(version);
+    //
+    //     if (name) {
+    //         console.log(name);
+    //         if (version) {
+    //             console.log(version);
+    //             console.log(listOfModels);
+    //             const model = listOfModels.find(x => x.modelName === name
+    //                 && x.version.toString() === version);
+    //
+    //             console.log(model);
+    //             if (model) {
+    //                 getModel(model.id);
+    //             }
+    //         } else {
+    //             const model = listOfCurrentModels.find(x => x.modelName === name);
+    //
+    //             if (model) {
+    //                 getModel(model.currentModelId);
+    //             }
+    //         }
+    //     }
+    //
+    // }
 
     // componentWillMount() {
     //     this.componentUp()
@@ -75,17 +75,59 @@ class Models extends React.Component {
 
     render() {
         const {
+            getModel,
+            listOfModels,
             listOfCurrentModels,
+            history,
+            newHistory,
+            location,
             model,
-            family,
-            newHistory
+            family
         } = this.props;
-        console.log(listOfCurrentModels);
-        console.log(`HISTORY ${newHistory}`);
+
+        // console.log(`Name ${name}`);
+        // console.log(`Var ${version}`);
+
+        const p = location.pathname.split("/");
+        const name = p[2];
+        const version = p[3];
+        console.log(p);
+        console.log(name);
+        console.log(version);
+
+        if (name) {
+            console.log(name);
+            if (version) {
+                if (!model || model.modelName !== name || model.version.toString() !== version) {
+
+                    console.log(version);
+                    console.log(listOfModels);
+                    const model = listOfModels.find(x => x.modelName === name
+                        && x.version.toString() === version);
+
+                    console.log(model);
+                    if (model) {
+                        getModel(model.id);
+                    }
+                }
+            } else {
+                if (!model || model.modelName !== name) {
+                    const model = listOfCurrentModels.find(x => x.modelName === name);
+
+                    if (model) {
+                        getModel(model.currentModelId);
+                    }
+                }
+            }
+
+        }
+
+
+        console.log(model);
 
         return (
                 <div className={styles.wrapper}>
-                    {this.state.exists && model && family ? <ModelTable
+                    {model && family ? <ModelTable
                         newHistory={newHistory}
                         model={model}
                         versions={family.map(x => ({ value: `${x.version}`, label: `v${x.version}` }))}
@@ -100,7 +142,6 @@ const mapStateToProps = ({ data: { listOfModels, listOfCurrentModels, model, fam
     ({ listOfModels, listOfCurrentModels, model, family, newHistory: history });
 
 const mapDispatchToProps = {
-    getListOfModels,
     getModel
 };
 

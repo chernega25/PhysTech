@@ -63,8 +63,16 @@ class TableCustom extends Component {
         }
     }
 
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            variableList: nextProps.variableList,
+            disabled: true
+        });
+    }
+
     render() {
         const { variableList, disabled } = this.state;
+        console.log(variableList);
         return (
             <div>
                 <Table>

@@ -13,6 +13,7 @@ import {
 import reducers from './client/reducers';
 import matchConfig from './matchConfig';
 import './styles.css';
+import Sidebar from "./client/containers/Sidebar/Sidebar.jsx";
 
 const consoleDebug = debug('client:rendering');
 
@@ -32,13 +33,16 @@ const store = createStore(
 
 render(
     <Provider store={store}>
-        <BrowserRouter>
-            <Switch>
-                {
-                    matchConfig.map((route, index) => <Route key={`route${index}`} {...route} />)
-                }
-            </Switch>
-        </BrowserRouter>
+            <BrowserRouter>
+                <div>
+                    <Sidebar />
+                    <Switch>
+                        {
+                            matchConfig.map((route, index) => <Route key={`route${index}`} {...route} />)
+                        }
+                    </Switch>
+                </div>
+            </BrowserRouter>
     </Provider>,
     root
 );

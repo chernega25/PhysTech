@@ -29,7 +29,7 @@ class ModelTable extends Component {
                 </div>
                 <div className={styles.right}>
                     <Select
-                        value={`${model.version}`}
+                        value={{ value: `${model.version}`, label: `v${model.version}` }}
                         options={versions}
                         onChange={handleChangeVersion}
                     />

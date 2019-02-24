@@ -1,9 +1,11 @@
 import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
+import Button from '@platform-ui/button';
 
 import styles from './Sidebar.css';
 import {setHistory} from "../../actions/setHistory";
 import {connect} from "react-redux";
+import {getListOfModels} from "../../actions/getListOfModels";
 
 
 class Sidebar extends Component {
@@ -29,11 +31,20 @@ class Sidebar extends Component {
 
         return renderPath[renderPath.length -1] === activePath[activePath.length - 1]
     }
-    
+
+    componentWillMount() {
+        this.props.getListOfModels();
+    }
+
     render() {
         const {
-            components = []
+            listOfCurrentModels
         } = this.props;
+
+        const components = listOfCurrentModels ? listOfCurrentModels.map(x => ({
+            component: props => <Button {...props}>{x.modelName}</Button>,
+            path: `/models/${x.modelName}/${x.version}`
+        })) : [];
 
         return (
             <div className={styles.sidebar}>
@@ -57,11 +68,12 @@ class Sidebar extends Component {
 
 }
 
-const mapStateToProps = (state) =>
-    ({});
+const mapStateToProps = ({ data: { listOfModels, listOfCurrentModels }}) =>
+    ({ listOfModels, listOfCurrentModels });
 
 const mapDispatchToProps = {
-    setHistory
+    setHistory,
+    getListOfModels
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Sidebar));
