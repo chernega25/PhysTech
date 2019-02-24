@@ -5,7 +5,7 @@ const fetch = require('isomorphic-fetch');
 const consoleDebug = debug('server:sendingToClient');
 
 const updateObjectFactory = (url) => (req, res) => {
-
+    console.log(req);
     fetch(`${API_URL}/${url}`, {
         method: 'POST',
         body: req.body

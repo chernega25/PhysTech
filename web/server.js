@@ -39,7 +39,7 @@ app.get('*', serverRender);
 
 app.post('/newModel', updateObjectFactory('newModel'));
 app.post('/newVariable', updateObjectFactory('newVariable'));
-app.post('/changeModel', updateObjectFactory('changeModel'));
+app.post('/changeModel*', updateObjectFactory('changeModel'));
 app.post('/changeVariable', updateObjectFactory('changeVariable'));
 
 

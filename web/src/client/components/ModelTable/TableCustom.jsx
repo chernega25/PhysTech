@@ -26,16 +26,16 @@ class TableCustom extends Component {
                 ...variableList.slice((+row) + 1)
             ]
         }));
-    }
+    };
 
     handleEdit = () =>
-        this.setState({ disabled: false })
+        this.setState({ disabled: false });
 
     handleCancel = () =>
         this.setState({
             variableList: this.props.variableList,
             disabled: true
-        })
+        });
 
     handleAddRow = () =>
         this.setState(({ variableList }) => ({
@@ -46,11 +46,15 @@ class TableCustom extends Component {
         }));
 
     handleSave = () => {
-        this.props.onSave(this.state.variableList);
+        this.props.onSave(this.state.variableList.map(x => ({
+            variableName: x.variableName,
+            coefficient: Number(x.coefficient),
+            defaultValue: Number(x.defaultValue)
+        })));
         this.setState({
             disabled: true
         })
-    }
+    };
 
     handleDeleteRow(id) {
         return () => {
@@ -71,6 +75,13 @@ class TableCustom extends Component {
     }
 
     render() {
+        if (this.props.shouldUpdate) {
+            this.setState({
+                variableList: nextProps.variableList,
+                disabled: true
+            });
+        }
+
         const { variableList, disabled } = this.state;
         console.log(variableList);
         return (
