@@ -8,14 +8,14 @@ class TableCellCustom extends Component {
     }
 
     render() {
-        const { id, value, name } = this.props;
+        const { id, value, name, disabled, onChange } = this.props;
         return (
                 <TableCell>
                     <Input
                         name={name + '_' + id}
                         value={value}
-                        disabled={this.props.disabled}
-                        onChange={this.props.onChange}
+                        disabled={disabled}
+                        onChange={onChange}
                     />
                 </TableCell>
         );
