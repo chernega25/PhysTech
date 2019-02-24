@@ -1,6 +1,7 @@
 package phystech.services
 
-import java.time.Instant
+import java.time.{Instant, LocalDateTime}
+import java.util.UUID
 
 import io.finch.Endpoint
 import monix.eval.Task
@@ -12,12 +13,19 @@ import io.circe.generic.auto._
 import io.finch.circe._
 import monix.catnap.MVar
 import phystech.calculate.CalculateModel
-import phystech.data.Model
+import phystech.data.{Model, Request, RequestVariable}
 import phystech.responses.CalculateModelResponse
 import phystech.services.CalculationService.CacheEntry
+import phystech.storage.clickhouse.ClickHouseBase
 import shapeless.HList
 
-class CalculationService(private val mvar: MVar[Task, Map[String, CacheEntry]])(implicit mongo: MongoBase, scheduler: Scheduler) extends Endpoint.Module[Task] {
+class CalculationService(
+  private val mvar: MVar[Task, Map[String, CacheEntry]]
+)(
+  implicit mongo: MongoBase,
+  clickHouse: ClickHouseBase,
+  scheduler: Scheduler
+) extends Endpoint.Module[Task] {
 
   private val cacheTtlSeconds = 1000
 
@@ -46,12 +54,29 @@ class CalculationService(private val mvar: MVar[Task, Map[String, CacheEntry]])(
         model <- getModel(body.parentModelId)
         result = CalculateModel.apply(model, body.variableList.map(v => v.variableName -> v.variableValue).toMap)
         missingFields = model.variableList.map(_.variableName).diff(body.variableList.map(_.variableName))
+        request = Request(UUID.randomUUID().toString, result, model.parentModelId, model.modelId, LocalDateTime.now())
+        _ <- clickHouse.write(request.toInsertQuery)
+        _ <- Task.sequence(
+              body.variableList.map(
+                variable => clickHouse.write(
+                  RequestVariable(request.id, variable.variableName, variable.variableValue).toInsertQuery
+                )
+              )
+            )
       } yield Ok(CalculateModelResponse(result, missingFields))
+    }
+
+  def invalidateCache: Endpoint[Task, Unit] =
+    post("invalidateCache" :: param[String]("parentModelId")) { parentId: String =>
+      for {
+        cache <- mvar.take
+        _ <- mvar.put(cache - parentId)
+      } yield Ok(())
     }
 
   final def combine[ES <: HList, CTS <: HList](bootstrap: Bootstrap[ES, CTS]) = bootstrap
     .serve[Application.Json](
-    (calculateModel) handle {
+    (calculateModel :+: invalidateCache) handle {
       case e: Exception =>
         println(s"Error: $e")
         BadRequest(e)
@@ -62,7 +87,7 @@ class CalculationService(private val mvar: MVar[Task, Map[String, CacheEntry]])(
 object CalculationService {
   case class CacheEntry(model: Model, bestBefore: Instant)
 
-  def mkCalculationService(implicit mongo: MongoBase, scheduler: Scheduler): Task[CalculationService] =
+  def mkCalculationService(implicit mongo: MongoBase, clickHouse: ClickHouseBase, scheduler: Scheduler): Task[CalculationService] =
     for {
       mvar <- MVar.of[Task, Map[String, CacheEntry]](Map())
     } yield new CalculationService(mvar)
