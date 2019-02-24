@@ -3,9 +3,9 @@ import styles from './ModelsPage.css';
 import ModelTable from '../../components/ModelTable/ModelTable.jsx';
 import Button from '@platform-ui/button';
 import Sidebar from '../../containers/Sidebar/Sidebar.jsx';
-import {getListOfModels} from "../../actions/getListOfModels";
-import {connect} from "react-redux";
-import {getModel} from "../../actions/getModel";
+import { getListOfModels } from "../../actions/getListOfModels";
+import { connect } from "react-redux";
+import { getModel } from "../../actions/getModel";
 
 class ModelsPage extends React.Component {
 
@@ -17,7 +17,7 @@ class ModelsPage extends React.Component {
 
     }
 
-    componentWillMount() {
+    componentDidMount() {
 
         console.log("hey");
         const {
@@ -29,25 +29,31 @@ class ModelsPage extends React.Component {
         } = this.props;
 
 
-        getListOfModels();
-        if (match.params.name) {
-            if (match.params.version) {
-                const model = listOfModels.find(x => x.modelName === match.params.name
-                                                && x.version === match.params.version);
-                if (model) {
-                    getModel(model.modelId);
+        getListOfModels().then( ({ listOfModels, listOfCurrentModels }) => {
+
+            if (match.params.name) {
+                console.log(match.params.name);
+                if (match.params.version) {
+                    console.log(match.params.version);
+                    const model = listOfModels.find(x => x.modelName === match.params.name
+                        && x.version === match.params.version);
+
+                    if (model) {
+                        getModel(model.modelId);
+                    } else {
+                        this.setState({exists: false})
+                    }
                 } else {
-                    this.setState({ exists: false })
-                }
-            } else {
-                const model = listOfCurrentModels.find(x => x.modelName === match.params.name);
-                if (model) {
-                    getModel(model.currentModelId);
-                } else {
-                    this.setState({ exists: false })
+                    const model = listOfCurrentModels.find(x => x.modelName === match.params.name);
+
+                    if (model) {
+                        getModel(model.currentModelId);
+                    } else {
+                        this.setState({exists: false})
+                    }
                 }
             }
-        }
+        });
     }
 
     render() {
@@ -60,15 +66,14 @@ class ModelsPage extends React.Component {
             <div className={styles.root}>
                 <Sidebar
                     location
-                    components={listOfCurrentModels.map(x => ({
+                    components={listOfCurrentModels ? listOfCurrentModels.map(x => ({
                         component: props => <Button {...props}>{x.modelName}</Button>,
                         path: `/models/${x.modelName}`
-                    }))}
+                    })) : []}
                 />
                 <div className={styles.wrapper}>
-                    {this.state.exists ? <ModelTable
-                        modelName={match.params.name}
-                    /> : "Пошёл нахуй"}
+                    {console.log(this.state)}
+                    {this.state.exists ? <div/> : "Пошёл нахуй"}
                 </div>
             </div>
         )

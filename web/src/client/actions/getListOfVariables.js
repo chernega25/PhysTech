@@ -8,7 +8,7 @@ const consoleDebug = debug('client:actions');
 
 export const getListOfVariables = () => async dispatch => {
 
-    fetch('/variables')
+    fetch('/getVariables')
         .then(res => res.json())
         .then((data) => {
 

@@ -8,7 +8,7 @@ const consoleDebug = debug('client:actions');
 
 export const getModel = (modelId) => async dispatch => {
 
-    fetch(`/models/${modelId}`)
+    fetch(`/getModels/${modelId}`)
         .then(res => res.json())
         .then((data) => {
 

@@ -1,6 +1,7 @@
 const consoleDebug = require('debug')('server');
 const app = (require('express'))();
 const env = require('./src/env');
+const URL = require('./constants');
 
 require('css-modules-require-hook')({
     generateScopedName: '[name]_[local]'
@@ -32,9 +33,9 @@ const getListOfVariables = require('./src/client/requests/getListOfVariables');
 const getModel = require('./src/client/requests/getModel');
 const updateObjectFactory = require('./src/client/requests/updateObjectFactory');
 
-app.get('/models', getListOfModels);
-app.get('/models/', getModel);
-app.get('/variables', getListOfVariables);
+app.get('/getModels', getListOfModels);
+app.get('/getModels/', getModel);
+app.get('/getVariables', getListOfVariables);
 app.get('*', serverRender);
 
 app.post('/newModel', updateObjectFactory('newModel'));
