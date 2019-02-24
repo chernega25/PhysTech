@@ -8,8 +8,11 @@ import phystech.services.{CalculationService, ModelsService, TestingService}
 import io.circe.generic.auto._
 import io.finch.circe._
 import phystech.storage.mongo.MongoBase
+import ch.qos.logback.classic.{Level,Logger}
+import org.slf4j.LoggerFactory
 
-object Main extends App with Endpoint.Module[Task] {
+object Main extends App with Endpoint.Module[Task]  {
+  val logger = LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME).asInstanceOf[Logger].setLevel(Level.INFO)
   implicit val encodeException: Encoder[Exception] = Encoder.instance({
     case e: Exception => Json.obj("message" -> Json.fromString(e.getMessage))
   })
