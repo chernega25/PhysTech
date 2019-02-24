@@ -13,12 +13,9 @@ class VariablesTable extends Component {
         this.state = {
             variableList: variables_mock
         };
-        this.handleSave = this.handleSave.bind(this);
-        this.handleAddRow = this.handleAddRow.bind(this);
-        this.handleDeleteLastRow = this.handleDeleteLastRow.bind(this);
     }
 
-    handleSave(id, fields) {
+    handleSave = (id, fields) =>
         this.setState(({ variableList }) => ({
             variableList: [
                 ...variableList.slice(0, id),
@@ -30,24 +27,21 @@ class VariablesTable extends Component {
                 ...variableList.slice(id + 1)
             ]
         }));
-    }
 
-    handleAddRow() {
+    handleAddRow = () =>
         this.setState(({ variableList }) => ({
             variableList: [
                 ...variableList,
                 {variableName: '', descriptionName: '', isNew: true}
             ]
         }));
-    }
 
-    handleDeleteLastRow() {
+    handleDeleteLastRow = () =>
         this.setState(({ variableList }) => ({
             variableList: [
                 ...variableList.slice(0, variableList.length-1)
             ]
         }));
-    }
 
     render() {
         console.log(this.state.variableList)
