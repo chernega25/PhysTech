@@ -37,7 +37,6 @@ class ModelTable extends Component {
 
     handleChangeVersion = (selectedVersion) => {
         this.setState({ selectedVersion });
-        console.log(`Option selected:`, selectedVersion);
     }
 
     handleSave(variableList) {
