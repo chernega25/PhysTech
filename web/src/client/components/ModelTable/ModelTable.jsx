@@ -16,22 +16,18 @@ const options_mock = [
 class ModelTable extends Component {
     constructor(props) {
         super(props);
-        this.getDataByModelName = this.getDataByModelName.bind(this)
-        this.getVersionsByModelName = this.getVersionsByModelName.bind(this)
         this.state = {
             variableList: this.getDataByModelName(props.modelName),
             disabled: true,
             selectedVersion: this.getVersionsByModelName(props.modelName)
         }
-        this.handleSave = this.handleSave.bind(this);
-        this.handleChangeVersion = this.handleChangeVersion.bind(this);
     }
 
-    getDataByModelName(modelName) {
+    getDataByModelName = (modelName) => {
         return mock
     }
 
-    getVersionsByModelName(modelName) {
+    getVersionsByModelName = (modelName) => {
         return options_mock
     }
 
@@ -39,7 +35,7 @@ class ModelTable extends Component {
         this.setState({ selectedVersion });
     }
 
-    handleSave(variableList) {
+    handleSave = (variableList) => {
         this.setState({ variableList: variableList })
     }
 
