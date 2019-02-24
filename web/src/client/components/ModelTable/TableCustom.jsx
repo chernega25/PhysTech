@@ -77,8 +77,8 @@ class TableCustom extends Component {
             <div>
                 <Table>
                     <TableHeader>
-                        {['Переменная', 'Вес', 'Значение по умолчанию'].map((name) =>
-                            (<TableHeaderCell textAlign='center'>
+                        {['Переменная', 'Вес', 'Значение по умолчанию'].map((name, i) =>
+                            (<TableHeaderCell key={i} textAlign='center'>
                                 {name}
                             </TableHeaderCell>)
                         )}
@@ -87,6 +87,7 @@ class TableCustom extends Component {
                         (<TableRowCustom
                             row={row}
                             id={id}
+                            key={id}
                             disabled={disabled}
                             onChange={this.handleInputChange}
                             onDeleteRow={this.handleDeleteRow(id)}

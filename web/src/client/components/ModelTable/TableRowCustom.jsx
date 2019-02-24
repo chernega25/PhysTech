@@ -15,9 +15,10 @@ class TableRowCustom extends Component {
         });
         return (
             <TableRow>
-                {row_arr.map(([name, value]) =>
+                {row_arr.map(([name, value], i) =>
                     (<TableCellCustom
                         id={id}
+                        key={i}
                         name={name}
                         value={value}
                         disabled={this.props.disabled}
