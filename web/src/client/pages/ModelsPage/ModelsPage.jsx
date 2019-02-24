@@ -17,7 +17,7 @@ class ModelsPage extends React.Component {
 
     }
 
-    componentDidMount() {
+    componentWillMount() {
 
         console.log("hey");
         const {
@@ -61,6 +61,7 @@ class ModelsPage extends React.Component {
             match,
             listOfCurrentModels
         } = this.props;
+        console.log(listOfCurrentModels);
 
         return (
             <div className={styles.root}>
@@ -72,7 +73,6 @@ class ModelsPage extends React.Component {
                     })) : []}
                 />
                 <div className={styles.wrapper}>
-                    {console.log(this.state)}
                     {this.state.exists ? <ModelTable
                         modelName={match.params.name}
                     /> : "Пошёл нахуй"}
@@ -82,9 +82,7 @@ class ModelsPage extends React.Component {
     }
 }
 
-const mapStateToProps = ({ listOfModels, listOfCurrentModels }) => {
-    return { listOfModels, listOfCurrentModels };
-};
+const mapStateToProps = ({ data: { listOfModels, listOfCurrentModels }}) => ({ listOfModels, listOfCurrentModels });
 
 const mapDispatchToProps = {
     getListOfModels,
