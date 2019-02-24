@@ -6,11 +6,11 @@ import java.util.UUID
 
 case class Request(id: UUID,
                    response: Double,
-                   modelName: String,
+                   modelId: String,
                    date: LocalDateTime) {
   import Request.pattern
   override def toString: String =
-    "'" + id + "'" + ", " + response + ", '" + modelName + "', '" + date.format(
+    "'" + id + "'" + ", " + response + ", '" + modelId + "', '" + date.format(
       pattern) + "'"
 
   def toInsertQuery = "insert into requests values (" + toString + ")"

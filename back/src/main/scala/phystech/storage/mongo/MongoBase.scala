@@ -36,7 +36,7 @@ class MongoBase(url: String, name: String) {
   }
 
   def addModelToFamily(model: Model): Task[Unit] = {
-    modelCollection.insertOne(model).asTask.map(_ => Task.unit)
+    modelCollection.insertOne(model).asTask.flatMap(_ => Task.unit)
   }
 
   def getAllModels: Task[Seq[Model]] = {
@@ -88,5 +88,13 @@ class MongoBase(url: String, name: String) {
 
   def getCurrentModels: Task[Seq[CurrentModel]] = {
     currentModelCollection.find().asTask
+  }
+
+  def getCurrentModel(parentModelId: String): Task[CurrentModel] = {
+    currentModelCollection.find(equal("parentModelId", parentModelId)).asTask.map {
+      case Seq()      => throw new Exception("Current model not found")
+      case Seq(model) => model
+      case _          => throw new Exception(s"Multiple current models with parentModelId `$parentModelId`")
+    }
   }
 }

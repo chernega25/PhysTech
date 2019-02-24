@@ -4,7 +4,7 @@ import com.twitter.util.Await
 import io.circe.{Encoder, Json}
 import io.finch._
 import monix.eval.Task
-import phystech.services.{ModelsService, TestingService}
+import phystech.services.{CalculationService, ModelsService, TestingService}
 import io.circe.generic.auto._
 import io.finch.circe._
 import phystech.storage.mongo.MongoBase
@@ -15,7 +15,8 @@ object Main extends App with Endpoint.Module[Task] {
   })
 
   implicit val mongo = new MongoBase("mongodb://phystech:phystech@209.250.236.189", "phystech")
-  val modelsService = new ModelsService().combine(Bootstrap)
-  val testingService = new TestingService().combine(modelsService)
-  Await.ready(Http.server.serve(":8080", testingService.toService))
+  val modelsService = new ModelsService()
+  val testingService = new TestingService()
+  val calculationService = new CalculationService()
+  Await.ready(Http.server.serve(":8080", modelsService.combine(testingService.combine(calculationService.combine(Bootstrap))).toService))
 }
