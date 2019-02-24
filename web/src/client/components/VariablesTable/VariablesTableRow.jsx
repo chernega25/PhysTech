@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Table, { TableHeader, TableHeaderCell, TableRow, TableCell } from '@platform-ui/table';
+import { TableRow, TableCell } from '@platform-ui/table';
 import Input from '@tinkoff-ui/input';
 import Group from '@platform-ui/group';
 import Button from '@platform-ui/button';
@@ -12,12 +12,9 @@ class VariablesTableRow extends Component {
             descriptionName: props.descriptionName,
             variableName: props.variableName
         }
-        this.handleChange = this.handleChange.bind(this);
-        this.handleCancel = this.handleCancel.bind(this);
-        this.handleSave = this.handleSave.bind(this)
     }
 
-    handleChange(name) {
+    handleChange = (name) => {
         return (value) =>
             this.setState({
                 isEditing: true,
@@ -25,7 +22,7 @@ class VariablesTableRow extends Component {
             })
     }
 
-    handleSave() {
+    handleSave = () => {
         this.props.onSave(this.props.id, {
             'variableName': this.state.variableName,
             'descriptionName': this.state.descriptionName
@@ -35,7 +32,7 @@ class VariablesTableRow extends Component {
         })
     }
 
-    handleCancel() {
+    handleCancel = () => {
         if (this.props.isNew) {
             this.props.deleteLastRow()
         } else {
